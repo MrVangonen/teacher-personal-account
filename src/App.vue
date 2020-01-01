@@ -1,32 +1,64 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+    <v-app class="d-flex">
+        <Nav v-bind:navOptions="navOptions" />
+        <main v-bind:class="changePadding">
+            <Header v-bind:navOptions="navOptions" />
+            <div class="container container_full-height">
+                <router-view></router-view>
+            </div>
+            <Footer />
+        </main>
+    </v-app>
 </template>
 
+<script>
+import Header from "./components/app/Header";
+import Nav from "./components/app/Nav";
+import Footer from "./components/app/Footer";
+
+export default {
+    name: "App",
+    components: {
+        Header,
+        Nav,
+        Footer
+    },
+    data() {
+        return {
+            navOptions: {
+                isNavButtonDesktopClicked: false,
+                isNavButtonMobileClicked: false,
+                appNavTitle: "Shedule"
+            }
+        };
+    },
+    computed: {
+        changePadding() {
+            if (this.$vuetify.breakpoint.xsOnly) {
+                return "pl-0";
+            } else {
+                return {
+                    "main-container_small-pl": this.navOptions
+                        .isNavButtonDesktopClicked,
+                    "main-container_big-pl": !this.navOptions
+                        .isNavButtonDesktopClicked
+                };
+            }
+        }
+    }
+};
+</script>
+
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.main-container_small-pl {
+    padding-left: 80px;
 }
 
-#nav {
-  padding: 30px;
+.main-container_big-pl {
+    padding-left: 260px;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.container_full-height {
+    min-height: 100vh;
 }
 </style>
