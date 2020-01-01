@@ -2,8 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Shedule from '../views/Shedule.vue'
 import Students from '../views/Students.vue'
-import Home from '../views/Home.vue'
-import About from '../views/About.vue'
+import Disciplines from '../views/Disciplines.vue'
+import Appeals from '../views/Appeals.vue'
 
 Vue.use(VueRouter)
 
@@ -14,19 +14,19 @@ const routes = [
     component: Shedule
   },
   {
+    path: '/disciplines',
+    name: 'disciplines',
+    component: Disciplines
+  },
+  {
     path: '/students',
     name: 'students',
     component: Students
   },
   {
-    path: '/home',
-    name: 'home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: About
+    path: '/appeals',
+    name: 'appeals',
+    component: Appeals
   }
 ]
 

@@ -1,8 +1,8 @@
 <template>
     <v-app class="d-flex">
-        <Nav v-bind:navOptions="navOptions" />
-        <main v-bind:class="changePadding">
-            <Header v-bind:navOptions="navOptions" />
+        <Nav :navOptions="navOptions" />
+        <main :class="changePadding">
+            <Header :navOptions="navOptions" />
             <div class="container container_full-height">
                 <router-view></router-view>
             </div>

@@ -7,24 +7,39 @@
         <template v-slot:prepend>
             <v-list>
                 <v-list-item>
-                    <v-list-item-avatar>
+                    <v-list-item-avatar size="60">
                         <v-img
-                            size="32"
-                            :src="require('@/assets/logo.png')"
+                            :src="require('@/assets/musk.png')"
                         ></v-img>
                         <!-- <v-icon dark>mdi-account-circle</v-icon> -->
                     </v-list-item-avatar>
                 </v-list-item>
-                <v-list-item link two-line>
-                    <v-list-item-content>
-                        <v-list-item-title class=" title">
-                            Иван Петрович
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-item-content>
+                            <v-list-item-title class="title">
+                                Илья Петрович
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                                преподаватель ПетрГУ
+                            </v-list-item-subtitle>
+                        </v-list-item-content>
+                    </template>
+                    <v-list-item
+                        v-for="(item, index) in personMenuItems"
+                        :key="index"
+                        router
+                        :to="item.link"
+                        dense
+                        link
+                    >
+                        <v-list-item-title v-text="item.text">
                         </v-list-item-title>
-                        <v-list-item-subtitle>
-                            преподаватель ПетрГУ
-                        </v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
+                        <v-list-item-icon>
+                            <v-icon v-text="item.icon"></v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+                </v-list-group>
             </v-list>
         </template>
         <v-divider></v-divider>
@@ -32,16 +47,18 @@
             <v-list-item-group v-model="activeRouteIndex">
                 <v-list-item
                     v-for="(item, index) in menuItems"
-                    v-bind:key="index"
+                    :key="index"
                     router
+                    active-class="primary--text"
                     :to="item.link"
+                    :href="item.href"
                 >
                     <v-list-item-icon>
                         <v-icon v-text="item.icon"></v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
                         <v-list-item-title
-                            v-text="item.title"
+                            v-text="item.text"
                         ></v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -63,26 +80,44 @@ export default {
     },
     data() {
         return {
+            icon: "mdi-folder",
+            personMenuItems: [
+                {
+                    icon: "mdi-account-lock",
+                    text: "Личные данные",
+                    link: ""
+                },
+                {
+                    icon: "mdi-settings",
+                    text: "Настройки",
+                    link: ""
+                }
+            ],
             menuItems: [
                 {
-                    icon: "mdi-folder",
-                    title: "Shedule",
+                    icon: "mdi-view-list",
+                    text: "Расписание",
                     link: "/"
                 },
                 {
-                    icon: "mdi-file",
-                    title: "Students",
+                    icon: "mdi-briefcase",
+                    text: "Дисциплины",
+                    link: "/disciplines"
+                },
+                {
+                    icon: "mdi-account-group",
+                    text: "Студенты",
                     link: "/students"
                 },
                 {
-                    icon: "mdi-home",
-                    title: "Home",
-                    link: "/home"
+                    icon: "mdi-cloud",
+                    text: "Научная деятельность",
+                    href: "https://petrsu.ru/page/science/organization"
                 },
                 {
-                    icon: "mdi-sync",
-                    title: "About",
-                    link: "/about"
+                    icon: "mdi-inbox",
+                    text: "Заявки в подразделения",
+                    link: "/appeals"
                 }
             ],
             activeRouteIndex: 0

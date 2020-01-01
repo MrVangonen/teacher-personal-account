@@ -19,7 +19,7 @@
             <v-icon>mdi-bell-outline</v-icon>
         </v-btn>
         <v-btn icon>
-            <v-icon>mdi-logout-variant</v-icon>
+            <v-icon color="red lighten-2">mdi-logout-variant</v-icon>
         </v-btn>
     </v-app-bar>
 </template>
