@@ -18,7 +18,7 @@
         <v-btn class="mr-sm-12" icon>
             <v-icon>mdi-bell-outline</v-icon>
         </v-btn>
-        <v-btn icon>
+        <v-btn color="red lighten-2" icon>
             <v-icon color="red lighten-2">mdi-logout-variant</v-icon>
         </v-btn>
     </v-app-bar>
@@ -45,3 +45,9 @@ export default {
     }
 };
 </script>
+
+<style lang="scss">
+.test {
+    background-color: red;
+}
+</style>
