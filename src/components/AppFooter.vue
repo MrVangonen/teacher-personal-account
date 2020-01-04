@@ -50,7 +50,7 @@ export default {
 
 <style lang="scss">
 .footer {
-    background: url(../../assets/footer_bg2.jpg) no-repeat scroll 50% 50%
+    background: url('../assets/footer_bg2.jpg') no-repeat scroll 50% 50%
         transparent;
 }
 </style>
