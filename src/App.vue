@@ -1,27 +1,27 @@
 <template>
     <v-app class="d-flex">
-        <Nav :navOptions="navOptions" />
+        <AppNavigation :navOptions="navOptions" />
         <main :class="changePadding">
-            <Header :navOptions="navOptions" />
+            <AppHeader :navOptions="navOptions" />
             <div class="container container_full-height">
                 <router-view></router-view>
             </div>
-            <Footer />
+            <AppFooter />
         </main>
     </v-app>
 </template>
 
 <script>
-import Header from "./components/app/Header";
-import Nav from "./components/app/Nav";
-import Footer from "./components/app/Footer";
+import AppHeader from "./components/AppHeader";
+import AppNavigation from "./components/AppNavigation";
+import AppFooter from "./components/AppFooter";
 
 export default {
     name: "App",
     components: {
-        Header,
-        Nav,
-        Footer
+        AppHeader,
+        AppNavigation,
+        AppFooter
     },
     data() {
         return {

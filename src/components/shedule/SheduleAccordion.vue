@@ -1,5 +1,5 @@
 <template>
   <div>
-    Disciplines
+    test
   </div>
 </template>
