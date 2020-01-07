@@ -27,52 +27,28 @@
                     focusable
                     hover
                     accordion
+                    multiple
                     v-model="currentDay"
                 >
-                    <v-expansion-panel v-for="(item, i) in days" :key="i">
-                        <v-expansion-panel-header class="text-uppercase">
-                            {{ item.text }}
+                    <v-expansion-panel v-for="(day, i) in shedule" :key="i">
+                        <v-expansion-panel-header
+                            class="primary lighten-1 white--text text-uppercase"
+                        >
+                            {{ day.text }}
                         </v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            <!-- <div class="d-flex">
-                              <div class="mr-2">
+                        <v-expansion-panel-content :class="'white clear-fix'">
+                            <div v-if="day.lessons && day.lessons.length">
+                                <SheduleCard
+                                    v-for="(lesson, i) in day.lessons"
+                                    :key="i"
+                                    :lesson="lesson"
+                                />
+                            </div>
+                            <div class="text-center py-2" v-else>
                                 <span>
-                                  6
+                                    Занятий нет
                                 </span>
-                              </div>
-                                <div class="mr-2">
-                                    <span>
-                                        17:00
-                                    </span>
-                                    <span>
-                                        18:35
-                                    </span>
-                                </div>
-                                <div class="d-flex flex-column mr-2">
-                                    <b>
-                                        Иностранный язык в профессиональной
-                                        деятельности
-                                    </b>
-                                    <span>
-                                        Володина Ольга Васильевна
-                                    </span>
-                                    <span>
-                                        16.09.2019 - 29.12.2019
-                                    </span>
-                                </div>
-                                <div class="mr-2">
-                                  <span>
-                                    Практические занятия 
-                                  </span>
-                                  <span>
-                                    Математика
-                                  </span>
-                                </div>
-                                <div>
-                                  1145
-                                </div>
-                            </div> -->
-                            <SheduleCard v-for="(item, i) in shedule" :key="i" :lesson="item" />
+                            </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
@@ -132,20 +108,87 @@ export default {
         ],
         shedule: [
             {
-                number: 6,
-                time: '17:00 - 18:35',
-                title: 'Английский язык',
-                type: 'Лекция',
-                existingPeriod: '17.09.19 - 18.01.20',
-                cabinet: 205,
-                corps: 'ГК'
+                text: "30.12 Понедельник",
+                value: 0,
+                lessons: [
+                    {
+                        id: 909,
+                        disciplineId: 0,
+                        number: 6,
+                        startTime: "17:00",
+                        endTime: "18:35",
+                        title: "Английский язык",
+                        type: "Лекция",
+                        existingPeriod: "17.09.19 - 18.01.20",
+                        cabinet: "205",
+                        corps: "ГК"
+                    },
+                    {
+                        id: 101,
+                        disciplineId: 0,
+                        number: 7,
+                        startTime: "18:35",
+                        endTime: "19:00",
+                        title: "Английский язык",
+                        type: "Практика",
+                        existingPeriod: "17.09.19 - 18.01.20",
+                        cabinet: "205а",
+                        corps: "ГК"
+                    }
+                ]
+            },
+            {
+                text: "31.12 Вторник",
+                value: 1
+            },
+            {
+                text: "01.12 Среда",
+                value: 2,
+                lessons: [
+                    {
+                        id: 90909,
+                        disciplineId: 1,
+                        number: 1,
+                        startTime: "8:00",
+                        endTime: "9:35",
+                        title: "Теория игр",
+                        type: "Лекция",
+                        existingPeriod: "19.01.19 - 01.01.22",
+                        cabinet: "102",
+                        corps: "ГК"
+                    },
+                    {
+                        id: 12345,
+                        disciplineId: 1,
+                        number: 2,
+                        startTime: "9:45",
+                        endTime: "11:00",
+                        title: "Теория игр",
+                        type: "Практика",
+                        existingPeriod: "11.06.19 - 01.01.22",
+                        cabinet: "12а",
+                        corps: "ГК"
+                    }
+                ]
+            },
+            {
+                text: "02.12 Четверг",
+                value: 3
+            },
+            {
+                text: "03.12 Пятница",
+                value: 4
             }
         ]
     }),
-    methods: {
-        clicked() {
-            debugger;
-        }
-    }
+    methods: {}
 };
 </script>
+
+<style lang="scss">
+.clear-fix {
+    & > :first-child {
+        padding: 5px 5px 0;
+    }
+}
+</style>
