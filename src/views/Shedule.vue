@@ -1,11 +1,10 @@
 <template>
     <div class="home">
-        <v-row align="baseline" justify="center" dense>
-            <v-col cols="12" sm="4">
+        <v-row align="baseline" dense>
+            <v-col xs12 sm6 md3>
                 <v-select
                     v-model="currentYear"
                     :items="years"
-                    value="title"
                     background-color="secondary lighten-3"
                     outlined
                     color="primary"
@@ -24,56 +23,32 @@
         </v-row>
         <v-row justify="center" dense>
             <v-col>
-                <v-expansion-panels focusable hover accordion>
-                    <v-expansion-panel v-for="(item, i) in 5" :key="i">
+                <v-expansion-panels
+                    focusable
+                    hover
+                    accordion
+                    multiple
+                    v-model="currentDay"
+                >
+                    <v-expansion-panel v-for="(day, i) in shedule" :key="i">
                         <v-expansion-panel-header
-                            >Item</v-expansion-panel-header
+                            class="primary lighten-1 white--text text-uppercase"
                         >
-                        <v-expansion-panel-content>
-                            <!-- <div class="d-flex">
-                              <div class="mr-2">
+                            {{ day.text }}
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content :class="'white clear-fix'">
+                            <div v-if="day.lessons && day.lessons.length">
+                                <SheduleCard
+                                    v-for="(lesson, i) in day.lessons"
+                                    :key="i"
+                                    :lesson="lesson"
+                                />
+                            </div>
+                            <div class="text-center py-2" v-else>
                                 <span>
-                                  6
+                                    Занятий нет
                                 </span>
-                              </div>
-                                <div class="mr-2">
-                                    <span>
-                                        17:00
-                                    </span>
-                                    <span>
-                                        18:35
-                                    </span>
-                                </div>
-                                <div class="d-flex flex-column mr-2">
-                                    <b>
-                                        Иностранный язык в профессиональной
-                                        деятельности
-                                    </b>
-                                    <span>
-                                        Володина Ольга Васильевна
-                                    </span>
-                                    <span>
-                                        16.09.2019 - 29.12.2019
-                                    </span>
-                                </div>
-                                <div class="mr-2">
-                                  <span>
-                                    Практические занятия 
-                                  </span>
-                                  <span>
-                                    Математика
-                                  </span>
-                                </div>
-                                <div>
-                                  1145
-                                </div>
-                            </div> -->
-                            <v-data-table
-                                :headers="headers"
-                                :items="desserts"
-                                hide-default-footer
-                                hide-default-header
-                            ></v-data-table>
+                            </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
@@ -90,6 +65,7 @@ export default {
     components: { SheduleCard },
     data: () => ({
         currentYear: 0,
+        currentDay: 0,
         years: [
             {
                 text: "2019/2020",
@@ -108,105 +84,111 @@ export default {
                 value: 3
             }
         ],
-        headers: [
+        days: [
             {
-                text: "Пара",
-                align: "left",
-                value: "count"
+                text: "30.12 Понедельник",
+                value: 0
             },
-            { text: "Время", value: "calories" },
-            { text: "", value: "fat" },
-            { text: "Carbs (g)", value: "carbs" },
-            { text: "Protein (g)", value: "protein" },
-            { text: "Iron (%)", value: "iron" }
+            {
+                text: "31.12 Вторник",
+                value: 1
+            },
+            {
+                text: "01.12 Среда",
+                value: 2
+            },
+            {
+                text: "02.12 Четверг",
+                value: 3
+            },
+            {
+                text: "03.12 Пятница",
+                value: 4
+            }
         ],
-        desserts: [
+        shedule: [
             {
-                name: "Frozen Yogurt",
-                calories: 159,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: "1%"
+                text: "30.12 Понедельник",
+                value: 0,
+                lessons: [
+                    {
+                        id: 909,
+                        disciplineId: 0,
+                        number: 6,
+                        startTime: "17:00",
+                        endTime: "18:35",
+                        title: "Английский язык",
+                        type: "Лекция",
+                        existingPeriod: "17.09.19 - 18.01.20",
+                        cabinet: "205",
+                        corps: "ГК"
+                    },
+                    {
+                        id: 101,
+                        disciplineId: 0,
+                        number: 7,
+                        startTime: "18:35",
+                        endTime: "19:00",
+                        title: "Английский язык",
+                        type: "Практика",
+                        existingPeriod: "17.09.19 - 18.01.20",
+                        cabinet: "205а",
+                        corps: "ГК"
+                    }
+                ]
             },
             {
-                name: "Ice cream sandwich",
-                calories: 237,
-                fat: 9.0,
-                carbs: 37,
-                protein: 4.3,
-                iron: "1%"
+                text: "31.12 Вторник",
+                value: 1
             },
             {
-                name: "Eclair",
-                calories: 262,
-                fat: 16.0,
-                carbs: 23,
-                protein: 6.0,
-                iron: "7%"
+                text: "01.12 Среда",
+                value: 2,
+                lessons: [
+                    {
+                        id: 90909,
+                        disciplineId: 1,
+                        number: 1,
+                        startTime: "8:00",
+                        endTime: "9:35",
+                        title: "Теория игр",
+                        type: "Лекция",
+                        existingPeriod: "19.01.19 - 01.01.22",
+                        cabinet: "102",
+                        corps: "ГК"
+                    },
+                    {
+                        id: 12345,
+                        disciplineId: 1,
+                        number: 2,
+                        startTime: "9:45",
+                        endTime: "11:00",
+                        title: "Теория игр",
+                        type: "Практика",
+                        existingPeriod: "11.06.19 - 01.01.22",
+                        cabinet: "12а",
+                        corps: "ГК"
+                    }
+                ]
             },
             {
-                name: "Cupcake",
-                calories: 305,
-                fat: 3.7,
-                carbs: 67,
-                protein: 4.3,
-                iron: "8%"
+                text: "02.12 Четверг",
+                value: 3
             },
             {
-                name: "Gingerbread",
-                calories: 356,
-                fat: 16.0,
-                carbs: 49,
-                protein: 3.9,
-                iron: "16%"
-            },
-            {
-                name: "Jelly bean",
-                calories: 375,
-                fat: 0.0,
-                carbs: 94,
-                protein: 0.0,
-                iron: "0%"
-            },
-            {
-                name: "Lollipop",
-                calories: 392,
-                fat: 0.2,
-                carbs: 98,
-                protein: 0,
-                iron: "2%"
-            },
-            {
-                name: "Honeycomb",
-                calories: 408,
-                fat: 3.2,
-                carbs: 87,
-                protein: 6.5,
-                iron: "45%"
-            },
-            {
-                name: "Donut",
-                calories: 452,
-                fat: 25.0,
-                carbs: 51,
-                protein: 4.9,
-                iron: "22%"
-            },
-            {
-                name: "KitKat",
-                calories: 518,
-                fat: 26.0,
-                carbs: 65,
-                protein: 7,
-                iron: "6%"
+                text: "03.12 Пятница",
+                value: 4
             }
         ]
     }),
-    methods: {
-        clicked() {
-            debugger;
-        }
-    }
+    methods: {}
 };
 </script>
+
+<style lang="scss">
+.clear-fix {
+    & > :first-child {
+        padding: 5px 5px 0;
+    }
+}
+</style>
