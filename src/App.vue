@@ -1,7 +1,7 @@
 <template>
-    <v-app class="d-flex">
+    <v-app class="app d-flex">
         <AppNavigation :navOptions="navOptions" />
-        <main :class="changePadding">
+        <main :class="changeLeftPadding">
             <AppHeader :navOptions="navOptions" />
             <div class="container container_full-height">
                 <router-view></router-view>
@@ -33,7 +33,7 @@ export default {
         };
     },
     computed: {
-        changePadding() {
+        changeLeftPadding() {
             if (this.$vuetify.breakpoint.xsOnly) {
                 return "pl-0";
             } else {

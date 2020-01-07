@@ -3,6 +3,7 @@
         app
         v-bind="isMobileDevice"
         v-model="navOptions.isNavButtonMobileClicked"
+        class="navigation-drawer"
     >
         <template v-slot:prepend>
             <v-list>
@@ -142,4 +143,9 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.navigation-drawer {
+    z-index: 999!important;
+    height: 100%!important;
+}
+</style>
