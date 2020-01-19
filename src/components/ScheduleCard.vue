@@ -49,7 +49,7 @@
 
 <script>
 export default {
-    name: "sheduleCard",
+    name: "scheduleCard",
     props: {
         lesson: {
             id: Number,

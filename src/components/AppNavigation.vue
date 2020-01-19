@@ -98,7 +98,7 @@ export default {
                 {
                     icon: "mdi-view-list",
                     text: "Расписание",
-                    link: "/"
+                    link: "/schedule"
                 },
                 {
                     icon: "mdi-briefcase",

@@ -14,7 +14,7 @@
             </v-col>
             <v-col>
                 <div class="text-left text-sm-left">
-                    <v-btn color="primary" small>
+                    <v-btn :to="'/schedule/timetable'" color="primary" small>
                         График учебного процесса
                         <v-icon right dark>mdi-calendar</v-icon>
                     </v-btn>
@@ -30,7 +30,7 @@
                     multiple
                     v-model="currentDay"
                 >
-                    <v-expansion-panel v-for="(day, i) in shedule" :key="i">
+                    <v-expansion-panel v-for="(day, i) in schedule" :key="i">
                         <v-expansion-panel-header
                             class="primary lighten-1 white--text text-uppercase"
                         >
@@ -38,7 +38,7 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content :class="'white clear-fix'">
                             <div v-if="day.lessons && day.lessons.length">
-                                <SheduleCard
+                                <ScheduleCard
                                     v-for="(lesson, i) in day.lessons"
                                     :key="i"
                                     :lesson="lesson"
@@ -58,14 +58,13 @@
 </template>
 
 <script>
-import SheduleCard from "../components/shedule/SheduleCard";
+import ScheduleCard from "../components/ScheduleCard";
 
 export default {
     name: "home",
-    components: { SheduleCard },
+    components: { ScheduleCard },
     data: () => ({
         currentYear: 0,
-        currentDay: 0,
         years: [
             {
                 text: "2019/2020",
@@ -86,27 +85,31 @@ export default {
         ],
         days: [
             {
-                text: "30.12 Понедельник",
+                text: "Понедельник",
                 value: 0
             },
             {
-                text: "31.12 Вторник",
+                text: "Вторник",
                 value: 1
             },
             {
-                text: "01.12 Среда",
+                text: "Среда",
                 value: 2
             },
             {
-                text: "02.12 Четверг",
+                text: "Четверг",
                 value: 3
             },
             {
-                text: "03.12 Пятница",
+                text: "Пятница",
                 value: 4
+            },
+            {
+                text: "Суббота",
+                value: 5
             }
         ],
-        shedule: [
+        schedule: [
             {
                 text: "30.12 Понедельник",
                 value: 0,
@@ -178,9 +181,20 @@ export default {
             {
                 text: "03.12 Пятница",
                 value: 4
+            },
+            {
+                text: "04.12 Суббота",
+                value: 5
             }
         ]
     }),
+    computed: {
+        currentDay() {
+            let currentEngDay = new Date().getDay();
+            let currentRusDayWithoutSunDay = currentEngDay === 0 ? null : currentEngDay - 1;
+            return [currentRusDayWithoutSunDay];
+        }
+    },
     methods: {}
 };
 </script>

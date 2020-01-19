@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Shedule from '../views/Shedule.vue'
+import Schedule from '../views/Schedule.vue'
+import TimeTable from '../views/TimeTable.vue'
 import Students from '../views/Students.vue'
 import Disciplines from '../views/Disciplines.vue'
 import Appeals from '../views/Appeals.vue'
@@ -10,8 +11,17 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'shedule',
-    component: Shedule
+    redirect: '/schedule',
+  },
+  {
+    path: '/schedule',
+    name: 'schedule',
+    component: Schedule
+  },
+  {
+    path: '/schedule/timetable',
+    name: 'timetable',
+    component: TimeTable
   },
   {
     path: '/disciplines',
