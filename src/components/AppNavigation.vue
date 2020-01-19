@@ -53,6 +53,7 @@
                     active-class="primary--text"
                     :to="item.link"
                     :href="item.href"
+                    :disabled="item.disabled"
                 >
                     <v-list-item-icon>
                         <v-icon v-text="item.icon"></v-icon>
@@ -113,7 +114,8 @@ export default {
                 {
                     icon: "mdi-cloud",
                     text: "Научная деятельность",
-                    href: "https://petrsu.ru/page/science/organization"
+                    href: "https://petrsu.ru/page/science/organization",
+                    disabled: true
                 },
                 {
                     icon: "mdi-inbox",
