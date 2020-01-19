@@ -39,7 +39,8 @@ export default {
                 });
 
                 result.push({
-                    name
+                    name,
+                    days: []
                 });
             }
             return result;
@@ -51,10 +52,10 @@ export default {
         this.sortParsedTimeRanges();
 
         this.monthsArray.forEach((month, monthIndex) => {
-            this.initMonthDaysArray(month, monthIndex);
+            month.startDayOfWeek = this.getStartDayOfWeekInTheMonth(monthIndex);
 
             let colorDaysArray = this.parsedTimeRanges.get(monthIndex);
-            this.setDaysArrayToMonth(month, monthIndex, colorDaysArray);
+            this.setDaysArrayToTheMonth(month, monthIndex, colorDaysArray);
         });
     },
     methods: {
@@ -85,39 +86,29 @@ export default {
                 colorDaysArray.sort((a, b) => a.number - b.number);
             }
         },
-        initMonthDaysArray(month, monthIndex) {
-            let startDayOfWeek = this.getStartDayOfWeekInMonth(monthIndex);
+        setDaysArrayToTheMonth(month, monthIndex, colorDaysArray = []) {
+            let currentMonthDaysCount = this.getDaysCountOfTheMonth(monthIndex);
 
-            month.days = new Array(startDayOfWeek).fill(null);
-        },
-        setDaysArrayToMonth(month, monthIndex, colorDaysArray = []) {
-            let currentMonthDaysCount = this.getDaysCountOfMonth(monthIndex);
-
-            this.fillMonthDaysArray(month, 1, currentMonthDaysCount - 1);
+            this.initMonthDaysArray(month, currentMonthDaysCount);
 
             colorDaysArray.forEach(colorDay => {
                 let currentMonthAvailableDaysCount =
                     currentMonthDaysCount - colorDay.number;
                 if (colorDay.daysCount <= currentMonthAvailableDaysCount) {
-                    this.fillMonthDaysArray(
+                    this.upgradeMonthDaysArray(
                         month,
                         colorDay.number,
                         colorDay.daysCount,
                         colorDay
                     );
                 } else {
-                    let nextMonthDaysArray = this.parsedTimeRanges.get(
-                        monthIndex + 1
+                    this.setNotFitDaysToTheNextMonth(
+                        monthIndex,
+                        currentMonthAvailableDaysCount,
+                        colorDay
                     );
 
-                    nextMonthDaysArray.unshift({
-                        number: 1,
-                        daysCount:
-                            colorDay.daysCount - currentMonthAvailableDaysCount - 1,
-                        color: colorDay.color,
-                        name: colorDay.name
-                    });
-                    this.fillMonthDaysArray(
+                    this.upgradeMonthDaysArray(
                         month,
                         colorDay.number,
                         currentMonthAvailableDaysCount,
@@ -126,16 +117,37 @@ export default {
                 }
             });
         },
-        fillMonthDaysArray(month, startDay, daysCount, attributes = {}) {
-            for (let number = 0; number <= daysCount; number++) {
-                month.days[startDay + number] = {
-                    number: startDay + number,
-                    color: attributes.color,
-                    name: attributes.name
-                };
+        setNotFitDaysToTheNextMonth(
+            monthIndex,
+            currentMonthAvailableDaysCount,
+            colorDay
+        ) {
+            let nextMonthDaysArray = this.parsedTimeRanges.get(monthIndex + 1);
+
+            nextMonthDaysArray.unshift({
+                number: 1,
+                daysCount:
+                    colorDay.daysCount - currentMonthAvailableDaysCount - 1,
+                color: colorDay.color,
+                name: colorDay.name
+            });
+        },
+        initMonthDaysArray(month, daysCount) {
+            for (let number = 1; number <= daysCount; number++) {
+                month.days.push({
+                    number,
+                    color: null,
+                    name: null
+                });
             }
         },
-        getStartDayOfWeekInMonth(monthIndex) {
+        upgradeMonthDaysArray(month, startDay, daysCount, attributes = {}) {
+            for (let number = 0; number <= daysCount; number++) {
+                month.days[startDay + number - 1].color = attributes.color;
+                month.days[startDay + number - 1].name = attributes.name;
+            }
+        },
+        getStartDayOfWeekInTheMonth(monthIndex) {
             let startDate = new Date(this.currentYaer, monthIndex, 1);
             let startDayOfWeek = startDate.getDay();
             startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
@@ -146,7 +158,7 @@ export default {
             let time = endDate.getTime() - startDate.getTime();
             return time / (1000 * 3600 * 24);
         },
-        getDaysCountOfMonth(month) {
+        getDaysCountOfTheMonth(month) {
             return new Date(this.currentYaer, month + 1, 0).getDate();
         }
     }
@@ -154,19 +166,6 @@ export default {
 </script>
 
 <style lang="scss">
-$circle-side: 2rem;
-
-.legend {
-    .legend-item {
-        .legend-circle {
-            width: $circle-side;
-            height: $circle-side;
-            border-radius: 50%;
-            background: red;
-        }
-    }
-}
-
 .calendar {
     display: flex;
     flex-wrap: wrap;

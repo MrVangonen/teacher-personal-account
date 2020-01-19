@@ -14,18 +14,28 @@
                 </b>
             </div>
             <div class="week">
-                <v-tooltip v-for="(day, index) in month.days" :key="index" :disabled="!day" left>
+                <div
+                    class="day"
+                    v-for="i in month.startDayOfWeek"
+                    :key="-i"
+                >
+                    {{ void 0 }}
+                </div>
+                <v-tooltip
+                    v-for="(day, index) in month.days"
+                    :key="index"
+                    left
+                >
                     <template v-slot:activator="{ on }">
-                        <span
+                        <div
                             v-on="on"
-                            class="day"
-                            :class="{ 'day-number': day }"
-                            :style="{ 'background-color': day && day.color }"
+                            class="day day-number"
+                            :style="{ 'background-color': day.color }"
                         >
-                            {{ day && day.number }}
-                        </span>
+                            {{ day.number }}
+                        </div>
                     </template>
-                    <span>{{ (day && day.name) || (day && defaultDayTooltip) }}</span>
+                    <span>{{ day.name || defaultDayTooltip }}</span>
                 </v-tooltip>
             </div>
         </div>
@@ -78,13 +88,12 @@ export default {
 
                 &-number {
                     &:hover {
-                        background-color: var(--v-primary-lighten2);
-                        border: 1px solid grey;
-                        opacity: 0.8;
+                        border: 1px solid var(--v-primary-lighten2);
+                        opacity: 0.9;
                     }
                 }
 
-                &:nth-child(7n) {
+                &:nth-of-type(7n) {
                     color: #e57373;
                 }
             }

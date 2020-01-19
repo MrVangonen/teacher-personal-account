@@ -16,19 +16,19 @@ export default {
                     name: "Праздники",
                     start: new Date(2020, 0, 1),
                     end: new Date(2020, 0, 8),
-                    color: "#5E345C"
+                    color: "#FFDCF2"
                 },
                 {
                     name: "Каникулы",
                     start: new Date(2020, 0, 9),
                     end: new Date(2020, 0, 12),
-                    color: "#5EC9CC"
+                    color: "#E3FFD7"
                 },
                 {
                     name: "Производственная практика",
                     start: new Date(2020, 0, 13),
                     end: new Date(2020, 1, 2),
-                    color: "#189599"
+                    color: "#DEC2FF"
                 },
                 {
                     name: "Сессия",
@@ -46,12 +46,6 @@ export default {
                     name: "ГИА",
                     start: new Date(2020, 5, 1),
                     end: new Date(2020, 5, 28),
-                    color: "#CC5EA8"
-                },
-                {
-                    name: "ГИА",
-                    start: new Date(2020, 6, 1),
-                    end: new Date(2020, 6, 1),
                     color: "#dddddd"
                 }
             ]
