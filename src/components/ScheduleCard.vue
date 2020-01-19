@@ -66,7 +66,7 @@ export default {
     methods: {
         goToCurrentLesson() {
             this.$router.push({
-                path: `/${this.lesson.id}`
+                path: `schedule/${this.lesson.id}`
             });
         }
     }
