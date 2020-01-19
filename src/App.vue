@@ -28,7 +28,7 @@ export default {
             navOptions: {
                 isNavButtonDesktopClicked: false,
                 isNavButtonMobileClicked: false,
-                appNavTitle: "Shedule"
+                appNavTitle: "Schedule"
             }
         };
     },

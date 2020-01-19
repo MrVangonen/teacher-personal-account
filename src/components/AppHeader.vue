@@ -32,6 +32,7 @@ export default {
     data() {
         return {};
     },
+    computed: {},
     methods: {
         changeNavButtonDesktopMobileState() {
             if (this.$vuetify.breakpoint.xsOnly) {
