@@ -21,6 +21,76 @@
                 </div>
             </v-col>
         </v-row>
+        <v-row dense>
+            <v-col class="d-flex align-center">
+                <v-icon
+                    class="mr-2"
+                    large
+                    color="accent"
+                    @click="sendRequestForSchedule()"
+                >
+                    mdi-arrow-left-bold-box
+                </v-icon>
+                <div class="d-flex flex-wrap justify-center mr-2">
+                    <span class="time-range">
+                        {{
+                            scheduleData.range.start.toLocaleDateString("rus", {
+                                month: "long",
+                                day: "numeric"
+                            })
+                        }}
+                        -
+                        {{
+                            scheduleData.range.end.toLocaleDateString("rus", {
+                                month: "long",
+                                day: "numeric"
+                            })
+                        }}
+                    </span>
+                    <span class="time-range">
+                        ,
+                        <b>
+                            {{ scheduleData.range.weekName }}
+                        </b>
+                    </span>
+                </div>
+                <v-icon
+                    class="mr-2"
+                    large
+                    color="accent"
+                    @click="sendRequestForSchedule()"
+                >
+                    mdi-arrow-right-bold-box
+                </v-icon>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+                <v-menu
+                    v-model="datePickerMenu"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                >
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                            v-model="dateToLocaleDateString"
+                            label="Выберите дату"
+                            prepend-icon="mdi-calendar"
+                            readonly
+                            v-on="on"
+                        ></v-text-field>
+                    </template>
+                    <v-date-picker
+                        v-model="dateForDatePicker"
+                        locale="ru"
+                        :first-day-of-week="1"
+                        @input="datePickerMenu = false"
+                        @change="sendRequestForSchedule()"
+                    ></v-date-picker>
+                </v-menu>
+            </v-col>
+        </v-row>
         <v-row justify="center" dense>
             <v-col>
                 <v-expansion-panels
@@ -30,11 +100,26 @@
                     multiple
                     v-model="currentDay"
                 >
-                    <v-expansion-panel v-for="(day, i) in schedule" :key="i">
+                    <v-expansion-panel
+                        v-for="(day, i) in scheduleData.schedule"
+                        :key="i"
+                    >
                         <v-expansion-panel-header
                             class="primary lighten-1 white--text text-uppercase"
                         >
-                            {{ day.text }}
+                            <span>
+                                {{
+                                    day.date.toLocaleDateString("rus", {
+                                        month: "numeric",
+                                        day: "numeric"
+                                    })
+                                }}
+                                {{
+                                    day.date.toLocaleDateString("rus", {
+                                        weekday: "long"
+                                    })
+                                }}
+                            </span>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content :class="'white clear-fix'">
                             <div v-if="day.lessons && day.lessons.length">
@@ -64,6 +149,8 @@ export default {
     name: "home",
     components: { ScheduleCard },
     data: () => ({
+        dateForDatePicker: new Date().toISOString().substr(0, 10),
+        datePickerMenu: false,
         currentYear: 0,
         years: [
             {
@@ -109,97 +196,121 @@ export default {
                 value: 5
             }
         ],
-        schedule: [
-            {
-                text: "30.12 Понедельник",
-                value: 0,
-                lessons: [
-                    {
-                        id: 909,
-                        disciplineId: 0,
-                        number: 6,
-                        startTime: "17:00",
-                        endTime: "18:35",
-                        title: "Английский язык",
-                        type: "Лекция",
-                        existingPeriod: "17.09.19 - 18.01.20",
-                        cabinet: "205",
-                        corps: "ГК"
-                    },
-                    {
-                        id: 101,
-                        disciplineId: 0,
-                        number: 7,
-                        startTime: "18:35",
-                        endTime: "19:00",
-                        title: "Английский язык",
-                        type: "Практика",
-                        existingPeriod: "17.09.19 - 18.01.20",
-                        cabinet: "205а",
-                        corps: "ГК"
-                    }
-                ]
+        scheduleData: {
+            range: {
+                start: new Date(2020, 0, 20),
+                end: new Date(2020, 0, 25),
+                weekName: "числитель"
             },
-            {
-                text: "31.12 Вторник",
-                value: 1
-            },
-            {
-                text: "01.12 Среда",
-                value: 2,
-                lessons: [
-                    {
-                        id: 90909,
-                        disciplineId: 1,
-                        number: 1,
-                        startTime: "8:00",
-                        endTime: "9:35",
-                        title: "Теория игр",
-                        type: "Лекция",
-                        existingPeriod: "19.01.19 - 01.01.22",
-                        cabinet: "102",
-                        corps: "ГК"
-                    },
-                    {
-                        id: 12345,
-                        disciplineId: 1,
-                        number: 2,
-                        startTime: "9:45",
-                        endTime: "11:00",
-                        title: "Теория игр",
-                        type: "Практика",
-                        existingPeriod: "11.06.19 - 01.01.22",
-                        cabinet: "12а",
-                        corps: "ГК"
-                    }
-                ]
-            },
-            {
-                text: "02.12 Четверг",
-                value: 3
-            },
-            {
-                text: "03.12 Пятница",
-                value: 4
-            },
-            {
-                text: "04.12 Суббота",
-                value: 5
-            }
-        ]
+            schedule: [
+                {
+                    date: new Date(2020, 0, 20),
+                    value: 0,
+                    lessons: [
+                        {
+                            id: 909,
+                            disciplineId: 0,
+                            number: 6,
+                            startTime: "17:00",
+                            endTime: "18:35",
+                            title: "Английский язык",
+                            type: "Лекция",
+                            existingPeriod: "17.09.19 - 18.01.20",
+                            cabinet: "205",
+                            corps: "ГК"
+                        },
+                        {
+                            id: 101,
+                            disciplineId: 0,
+                            number: 7,
+                            startTime: "18:35",
+                            endTime: "19:00",
+                            title: "Английский язык",
+                            type: "Практика",
+                            existingPeriod: "17.09.19 - 18.01.20",
+                            cabinet: "205а",
+                            corps: "ГК"
+                        }
+                    ]
+                },
+                {
+                    date: new Date(2020, 0, 21),
+                    value: 1
+                },
+                {
+                    date: new Date(2020, 0, 22),
+                    value: 2,
+                    lessons: [
+                        {
+                            id: 90909,
+                            disciplineId: 1,
+                            number: 1,
+                            startTime: "8:00",
+                            endTime: "9:35",
+                            title: "Теория игр",
+                            type: "Лекция",
+                            existingPeriod: "19.01.19 - 01.01.22",
+                            cabinet: "102",
+                            corps: "ГК"
+                        },
+                        {
+                            id: 12345,
+                            disciplineId: 1,
+                            number: 2,
+                            startTime: "9:45",
+                            endTime: "11:00",
+                            title: "Теория игр",
+                            type: "Практика",
+                            existingPeriod: "11.06.19 - 01.01.22",
+                            cabinet: "12а",
+                            corps: "ГК"
+                        }
+                    ]
+                },
+                {
+                    date: new Date(2020, 0, 23),
+                    value: 3
+                },
+                {
+                    date: new Date(2020, 0, 24),
+                    value: 4
+                },
+                {
+                    date: new Date(2020, 0, 25),
+                    value: 5
+                }
+            ]
+        }
     }),
     computed: {
-        currentDay() {
-            let currentEngDay = new Date().getDay();
-            let currentRusDayWithoutSunDay = currentEngDay === 0 ? null : currentEngDay - 1;
-            return [currentRusDayWithoutSunDay];
+        currentDay: {
+            get() {
+                let currentEngDay = new Date().getDay();
+                let currentRusDayWithoutSunDay =
+                    currentEngDay === 0 ? null : currentEngDay - 1;
+                return [currentRusDayWithoutSunDay];
+            },
+            set(newName) {
+                return newName;
+            }
+        },
+        dateToLocaleDateString() {
+            return new Date(this.dateForDatePicker).toLocaleDateString("rus");
         }
     },
-    methods: {}
+    methods: {
+        sendRequestForSchedule() {
+            console.log("request is going");
+        }
+    }
 };
 </script>
 
 <style lang="scss">
+.time-range {
+    white-space: nowrap;
+}
+
 .clear-fix {
     & > :first-child {
         padding: 5px 5px 0;
