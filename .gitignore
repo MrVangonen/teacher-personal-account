@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-/src/scss/utils
+/src/scss/utils/_mu.css
 .firebaserc
 .firebase
 firebase.json
