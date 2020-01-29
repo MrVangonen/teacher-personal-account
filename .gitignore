@@ -1,10 +1,10 @@
 .DS_Store
 node_modules
 /dist
+/src/scss/utils
 .firebaserc
 .firebase
 firebase.json
-/src/scss/utils
 
 # local env files
 .env.local
