@@ -4,15 +4,17 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "mu": "node-sass ./src/scss/utils/_mu.scss -o ./src/scss/utils/"
   },
   "dependencies": {
+    "mu-utils": "^1.0.6",
+    "node-sass": "^4.13.1",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
     "vuetify": "^2.1.0"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.12.0",
     "@mdi/font": "^4.7.95",
     "@vue/cli-plugin-router": "^4.1.0",
     "@vue/cli-service": "^4.1.0",

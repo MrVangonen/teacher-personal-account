@@ -26,7 +26,9 @@ export default {
     data() {
         return {
             navOptions: {
-                isNavButtonDesktopClicked: false,
+                isNavButtonDesktopClicked: Boolean(
+                    Number(localStorage.getItem("NavButtonClicked"))
+                ),
                 isNavButtonMobileClicked: false,
                 appNavTitle: "Schedule"
             }
