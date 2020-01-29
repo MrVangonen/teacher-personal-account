@@ -51,17 +51,7 @@
 export default {
     name: "scheduleCard",
     props: {
-        lesson: {
-            id: Number,
-            disciplineId: Number,
-            number: Number,
-            time: Date,
-            title: String,
-            type: String,
-            existingPeriod: String,
-            cabinet: String,
-            corps: String
-        }
+        lesson: Object
     },
     methods: {
         goToCurrentLesson() {
@@ -112,7 +102,7 @@ export default {
     }
 }
 
-@media (min-width: 600px) {
+@media (min-width: $small-screen) {
     .card {
         flex-direction: row;
         padding-top: 24px;
