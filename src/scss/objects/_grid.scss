@@ -1,0 +1,56 @@
+@import "../variables.scss";
+
+.o-grid {
+    display: flex;
+    flex-wrap: wrap;
+
+    .col {
+        padding: 4px;
+
+        &.fit-content {
+            width: fit-content;
+            max-width: fit-content;
+        }
+        @for $i from 1 through 12 {
+            &.size-#{$i} {
+                flex-shrink: 0;
+                flex-grow: 0;
+                flex-basis: (100% / 12) * $i;
+                max-width: (100% / 12) * $i;
+            }
+        }
+
+        @for $i from 1 through 12 {
+            @media (min-width: $small-screen + 1) {
+                &.sm\:size-#{$i} {
+                    flex-shrink: 0;
+                    flex-grow: 0;
+                    flex-basis: (100% / 12) * $i;
+                    max-width: (100% / 12) * $i;
+                }
+            }
+        }
+
+        @for $i from 1 through 12 {
+            @media (min-width: $medium-screen + 1) {
+                &.md\:size-#{$i} {
+                    flex-shrink: 0;
+                    flex-grow: 0;
+                    flex-basis: (100% / 12) * $i;
+                    max-width: (100% / 12) * $i;
+                }
+            }
+        }
+
+        @for $i from 1 through 12 {
+            @media (min-width: $large-screen + 1) {
+                &.lg\:size-#{$i} {
+                    flex-shrink: 0;
+                    flex-grow: 0;
+                    flex-basis: (100% / 12) * $i;
+                    max-width: (100% / 12) * $i;
+                }
+            }
+        }
+    }
+}

@@ -3,9 +3,9 @@
 
 // #region PRE-FLIGHT
 $mu-screens: (
-	sm: $small-screen,
-	md: $medium-screen,
-	lg: $large-screen
+	sm: $small-screen + 1,
+	md: $medium-screen + 1,
+	lg: $large-screen + 1
 ) !global;
 
 $grid-base: 4px;

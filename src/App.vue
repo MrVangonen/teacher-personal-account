@@ -15,6 +15,7 @@
 import AppHeader from "./components/AppHeader";
 import AppNavigation from "./components/AppNavigation";
 import AppFooter from "./components/AppFooter";
+import style from './scss/main.scss'
 
 export default {
     name: "App",

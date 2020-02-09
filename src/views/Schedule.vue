@@ -1,7 +1,7 @@
 <template>
     <div class="home">
-        <v-row align="baseline" dense>
-            <v-col xs12 sm6 md3>
+        <div class="o-grid align-baseline justify-space-between">
+            <div class="col size-12 sm:size-5 md:size-4">
                 <v-select
                     v-model="currentYear"
                     :items="years"
@@ -11,16 +11,16 @@
                     dense
                     label="Учебный год"
                 ></v-select>
-            </v-col>
-            <v-col>
+            </div>
+            <div class="col fit-content">
                 <div class="text-left text-sm-left">
                     <v-btn :to="'/schedule/timetable'" color="primary" small>
                         График учебного процесса
                         <v-icon right dark>mdi-calendar</v-icon>
                     </v-btn>
                 </div>
-            </v-col>
-        </v-row>
+            </div>
+        </div>
         <v-row dense>
             <v-col class="d-flex align-center">
                 <v-icon
