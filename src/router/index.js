@@ -23,7 +23,7 @@ const routes = [
         }
     },
     {
-        path: "/schedule/:id",
+        path: "/schedule/lesson/:id",
         name: "schedule",
         component: CurrentLesson,
         meta: {

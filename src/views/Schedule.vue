@@ -14,7 +14,7 @@
             </div>
             <div class="col fit-content">
                 <div class="text-left text-sm-left">
-                    <v-btn :to="'/schedule/timetable'" color="primary" small>
+                    <v-btn :to="'/schedule/timetable'" color="primary">
                         График учебного процесса
                         <v-icon right dark>mdi-calendar</v-icon>
                     </v-btn>
@@ -23,14 +23,17 @@
         </div>
         <v-row dense>
             <v-col class="d-flex align-center">
-                <v-icon
-                    class="mr-2"
-                    large
+                <v-btn
+                    x-large
+                    text
+                    icon
                     color="accent"
                     @click="sendRequestForSchedule()"
                 >
-                    mdi-arrow-left-bold-box
-                </v-icon>
+                    <v-icon>
+                        mdi-arrow-left-bold-box
+                    </v-icon>
+                </v-btn>
                 <div class="d-flex flex-wrap justify-center mr-2">
                     <span class="time-range">
                         {{
@@ -54,14 +57,17 @@
                         </b>
                     </span>
                 </div>
-                <v-icon
-                    class="mr-2"
-                    large
+                <v-btn
+                    x-large
+                    text
+                    icon
                     color="accent"
                     @click="sendRequestForSchedule()"
                 >
-                    mdi-arrow-right-bold-box
-                </v-icon>
+                    <v-icon>
+                        mdi-arrow-right-bold-box
+                    </v-icon>
+                </v-btn>
             </v-col>
             <v-col cols="12" sm="6" md="4">
                 <v-menu
@@ -70,13 +76,16 @@
                     :nudge-right="40"
                     transition="scale-transition"
                     offset-y
-                    min-width="290px"
+                    min-width="240px"
                 >
                     <template v-slot:activator="{ on }">
                         <v-text-field
                             v-model="dateToLocaleDateString"
                             label="Выберите дату"
-                            prepend-icon="mdi-calendar"
+                            append-icon="mdi-calendar"
+                            outlined
+                            color="primary"
+                            shaped
                             readonly
                             v-on="on"
                         ></v-text-field>
@@ -307,6 +316,11 @@ export default {
 </script>
 
 <style lang="scss">
+.v-text-field__details {
+    //fix select
+    display: none !important;
+}
+
 .time-range {
     white-space: nowrap;
 }

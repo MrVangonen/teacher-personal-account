@@ -4,7 +4,7 @@
             <div>
                 <v-card>
                     <v-card-title
-                        class="text-center justify-space-between align-start py-6"
+                        class="text-center justify-space-between align-start py-6 grey lighten-5"
                     >
                         <div>
                             <h1
@@ -53,19 +53,20 @@
                             </div>
                         </div>
                     </v-card-title>
-                    <v-tabs
-                        v-model="tab"
-                        background-color="transparent"
-                        color="accent"
-                        grow
-                    >
-                        <v-tab>
-                            Оценки и посещаемость
-                        </v-tab>
-                        <v-tab>
-                            Материалы занятия
-                        </v-tab>
-                    </v-tabs>
+                    <div class="secondary lighten-1">
+                        <v-tabs
+                            v-model="tab"
+                            background-color="transparent"
+                            color="primary darken-2"
+                        >
+                            <v-tab class="font-weight-bold">
+                                Оценки и посещаемость
+                            </v-tab>
+                            <v-tab class="font-weight-bold">
+                                Материалы занятия
+                            </v-tab>
+                        </v-tabs>
+                    </div>
                     <v-tabs-items v-model="tab">
                         <v-tab-item>
                             <v-card flat>
@@ -427,8 +428,7 @@ export default {
                     marks: []
                 }
             ],
-            studentsTableSelected: [
-            ]
+            studentsTableSelected: []
         };
     },
     mounted() {
@@ -482,7 +482,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+/* fix tabs slider on mobile */
+.v-slide-group__prev {
+    display: none !important;
+}
+
 .box-card {
     height: 50px;
     border: 1px solid rgba(0, 0, 0, 0.3);

@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar>
+    <v-app-bar :fixed="isMobile">
         <v-btn
             v-if="isMobile"
             icon

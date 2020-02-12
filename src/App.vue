@@ -35,9 +35,12 @@ export default {
         };
     },
     computed: {
+        isMobile() {
+            return this.$vuetify.breakpoint.xsOnly;
+        },
         changeLeftPadding() {
-            if (this.$vuetify.breakpoint.xsOnly) {
-                return "pl-0";
+            if (this.isMobile) {
+                return "main-container_mobile-version";
             } else {
                 return {
                     "main-container_small-pl": this.navOptions
@@ -52,6 +55,11 @@ export default {
 </script>
 
 <style lang="scss">
+.main-container_mobile-version {
+    padding-top: 0;
+    margin-top: 56px;
+}
+
 .main-container_small-pl {
     padding-left: 80px;
 }
