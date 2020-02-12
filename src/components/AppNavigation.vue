@@ -75,11 +75,6 @@ export default {
     props: {
         navOptions: Object
     },
-    watch: {
-        $route(to, from) {
-            this.navOptions.appNavTitle = to.name;
-        }
-    },
     data() {
         return {
             icon: "mdi-folder",

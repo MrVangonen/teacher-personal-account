@@ -68,7 +68,7 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100px;
-    padding: 0 20px;
+    padding: 5px 20px;
     margin-bottom: 5px;
     cursor: pointer;
     border-radius: 2px;
@@ -92,6 +92,7 @@ export default {
         &-caption {
             min-width: 40%;
             padding-left: 10%;
+            padding-right: 10%;
             font-size: 0.875rem;
             font-weight: 400;
         }

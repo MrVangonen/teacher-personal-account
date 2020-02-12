@@ -31,7 +31,6 @@ export default {
                     Number(localStorage.getItem("NavButtonClicked"))
                 ),
                 isNavButtonMobileClicked: false,
-                appNavTitle: "Schedule"
             }
         };
     },

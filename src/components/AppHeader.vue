@@ -21,7 +21,20 @@
                 >mdi-view-quilt</v-icon
             >
         </v-btn>
-        <v-toolbar-title>{{ navOptions.appNavTitle }}</v-toolbar-title>
+        <v-toolbar-title class="d-flex align-center">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <div v-on="on" class="d-flex align-center title grey--text">
+                        <v-icon>mdi-home</v-icon>
+                        <span class="title"> {{ $route.meta.rusRoute }} </span>
+                    </div>
+                </template>
+                <span class="d-flex align-center">
+                    <v-icon color="white" small>mdi-home</v-icon>
+                    {{ $route.meta.rusRoute }}
+                </span>
+            </v-tooltip>
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn class="mr-sm-12" icon>
             <v-icon>mdi-email-outline</v-icon>
@@ -60,8 +73,9 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.test {
-    background-color: red;
+<style lang="scss" scoped>
+.title {
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 </style>
