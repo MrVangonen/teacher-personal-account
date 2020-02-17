@@ -1,6 +1,7 @@
 <template>
     <div>
-        <Calendar :timeRanges="timeRanges" />
+        <h1 class="text-center">Учебный календарь на {{ currentYear }} год</h1>
+        <Calendar :timeRanges="timeRanges" :currentYear="currentYear"/>
     </div>
 </template>
 
@@ -50,6 +51,11 @@ export default {
                 }
             ]
         };
+    },
+    computed: {
+        currentYear() {
+            return new Date().getFullYear();
+        }
     }
 };
 </script>
