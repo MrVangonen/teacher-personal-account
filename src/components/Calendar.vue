@@ -1,13 +1,10 @@
 <template>
-    <div>
-        <h1 class="text-center">Учебный календарь на {{ currentYaer }} год</h1>
-        <div class="calendar">
-            <CalendarMonth
-                v-for="(month, index) in monthsArray"
-                :key="index"
-                :month="month"
-            />
-        </div>
+    <div class="calendar">
+        <CalendarMonth
+            v-for="(month, index) in monthsArray"
+            :key="index"
+            :month="month"
+        />
     </div>
 </template>
 
@@ -25,16 +22,14 @@ export default {
         };
     },
     props: {
-        timeRanges: Array
+        timeRanges: Array,
+        currentYear: Number
     },
     computed: {
-        currentYaer() {
-            return new Date().getFullYear();
-        },
         monthsArray() {
             let result = [];
             for (let i = 0; i < 12; i++) {
-                let name = new Date(this.currentYaer, i).toLocaleString("rus", {
+                let name = new Date(this.currentYear, i).toLocaleString("rus", {
                     month: "long"
                 });
 
@@ -148,7 +143,7 @@ export default {
             }
         },
         getStartDayOfWeekInTheMonth(monthIndex) {
-            let startDate = new Date(this.currentYaer, monthIndex, 1);
+            let startDate = new Date(this.currentYear, monthIndex, 1);
             let startDayOfWeek = startDate.getDay();
             startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
 
@@ -159,7 +154,7 @@ export default {
             return time / (1000 * 3600 * 24);
         },
         getDaysCountOfTheMonth(month) {
-            return new Date(this.currentYaer, month + 1, 0).getDate();
+            return new Date(this.currentYear, month + 1, 0).getDate();
         }
     }
 };

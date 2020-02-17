@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <div class="o-grid align-baseline justify-space-between">
-            <div class="col size-12 sm:size-5 md:size-4">
+            <div class="col size-12 sm:size-5 md:size-4 mb-4">
                 <v-select
                     v-model="currentYear"
                     :items="years"
@@ -80,7 +80,7 @@
                 >
                     <template v-slot:activator="{ on }">
                         <v-text-field
-                            v-model="dateToLocaleDateString"
+                            v-model="convertDatePickerDatesForTextField"
                             label="Выберите дату"
                             append-icon="mdi-calendar"
                             outlined
@@ -91,11 +91,15 @@
                         ></v-text-field>
                     </template>
                     <v-date-picker
-                        v-model="dateForDatePicker"
+                        v-model="datesForDatePicker"
                         locale="ru"
+                        no-title
+                        show-week
+                        dark
                         :first-day-of-week="1"
                         @input="datePickerMenu = false"
                         @change="sendRequestForSchedule()"
+                        range
                     ></v-date-picker>
                 </v-menu>
             </v-col>
@@ -112,6 +116,7 @@
                     <v-expansion-panel
                         v-for="(day, i) in scheduleData.schedule"
                         :key="i"
+                        :disabled="day.disabled"
                     >
                         <v-expansion-panel-header
                             class="primary lighten-1 white--text text-uppercase"
@@ -158,7 +163,7 @@ export default {
     name: "home",
     components: { ScheduleCard },
     data: () => ({
-        dateForDatePicker: new Date().toISOString().substr(0, 10),
+        datesForDatePicker: Array,
         datePickerMenu: false,
         currentYear: 0,
         years: [
@@ -179,41 +184,19 @@ export default {
                 value: 3
             }
         ],
-        days: [
-            {
-                text: "Понедельник",
-                value: 0
-            },
-            {
-                text: "Вторник",
-                value: 1
-            },
-            {
-                text: "Среда",
-                value: 2
-            },
-            {
-                text: "Четверг",
-                value: 3
-            },
-            {
-                text: "Пятница",
-                value: 4
-            },
-            {
-                text: "Суббота",
-                value: 5
-            }
-        ],
-        scheduleData: {
+        scheduleData: Object
+    }),
+    created() {
+        //default data
+        this.scheduleData = {
             range: {
-                start: new Date(2020, 0, 20),
-                end: new Date(2020, 0, 25),
+                start: new Date(),
+                end: this.DateAddDays(new Date(), 6),
                 weekName: "числитель"
             },
             schedule: [
                 {
-                    date: new Date(2020, 0, 20),
+                    date: new Date(),
                     value: 0,
                     lessons: [
                         {
@@ -243,11 +226,11 @@ export default {
                     ]
                 },
                 {
-                    date: new Date(2020, 0, 21),
+                    date: this.DateAddDays(new Date(), 1),
                     value: 1
                 },
                 {
-                    date: new Date(2020, 0, 22),
+                    date: this.DateAddDays(new Date(), 2),
                     value: 2,
                     lessons: [
                         {
@@ -277,20 +260,30 @@ export default {
                     ]
                 },
                 {
-                    date: new Date(2020, 0, 23),
+                    date: this.DateAddDays(new Date(), 3),
                     value: 3
                 },
                 {
-                    date: new Date(2020, 0, 24),
+                    date: this.DateAddDays(new Date(), 4),
                     value: 4
                 },
                 {
-                    date: new Date(2020, 0, 25),
+                    date: this.DateAddDays(new Date(), 5),
                     value: 5
+                },
+                {
+                    date: this.DateAddDays(new Date(), 6),
+                    disabled: true,
+                    value: 6
                 }
             ]
-        }
-    }),
+        };
+
+        this.datesForDatePicker = [
+            this.convertDayForDatePicker(this.scheduleData.range.start),
+            this.convertDayForDatePicker(this.scheduleData.range.end)
+        ];
+    },
     computed: {
         currentDay: {
             get() {
@@ -303,13 +296,49 @@ export default {
                 return newName;
             }
         },
-        dateToLocaleDateString() {
-            return new Date(this.dateForDatePicker).toLocaleDateString("rus");
+        convertDatePickerDatesForTextField() {
+            if (Array.isArray(this.datesForDatePicker)) {
+                if (this.datesForDatePicker.length === 2) {
+                    return `${new Date(
+                        this.datesForDatePicker[0]
+                    ).toLocaleDateString("rus")} ~ ${new Date(
+                        this.datesForDatePicker[1]
+                    ).toLocaleDateString("rus")}`;
+                } else if (this.datesForDatePicker.length === 1) {
+                    return this.firstAndLastDayOfWeek();
+                }
+            }
+        },
+        firstAndLastDayOfWeek() {
+            //TODO: лучше обробатывать даты на бакэнде
+            let date = new Date(this.datesForDatePicker[0]);
+            let rusDayOfWeek = this.rusDayOfWeek(date);
+            let monday = this.DateSubDays(date, rusDayOfWeek);
+            let sunday = this.DateAddDays(monday, 6);
+            this.datesForDatePicker = [
+                this.convertDayForDatePicker(monday),
+                this.convertDayForDatePicker(sunday)
+            ];
+            return `${monday} ~ ${sunday}`;
         }
     },
     methods: {
         sendRequestForSchedule() {
             console.log("request is going");
+        },
+        DateAddDays(date, daysCount) {
+            let dateCopy = new Date(date.getTime());
+            return new Date(dateCopy.setDate(dateCopy.getDate() + daysCount));
+        },
+        DateSubDays(date, daysCount) {
+            let dateCopy = new Date(date.getTime());
+            return new Date(dateCopy.setDate(dateCopy.getDate() - daysCount));
+        },
+        rusDayOfWeek(date) {
+            return date.getDay() === 0 ? 6 : date.getDay() - 1;
+        },
+        convertDayForDatePicker(day) {
+            return day.toISOString().substr(0, 10);
         }
     }
 };
