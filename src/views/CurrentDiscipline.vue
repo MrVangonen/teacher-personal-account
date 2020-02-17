@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="lesson">
+        <div v-if="discipline">
             <div>
                 <v-card>
                     <v-card-title
@@ -8,57 +8,50 @@
                     >
                         <div class="d-flex flex-column align-center">
                             <h1
-                                class="font-weight-bold display-3 primary--text pb-2"
+                                class="font-weight-bold display-3 accent--text pb-2"
                             >
-                                {{ lesson.title }}
+                                {{ discipline.title }}
                             </h1>
                             <span class="mb-2">
                                 {{
-                                    lesson.date.toLocaleDateString("rus", {
-                                        day: "numeric",
-                                        month: "long",
-                                        year: "numeric"
-                                    })
+                                    discipline.existingPeriod.start.toLocaleDateString(
+                                        "rus",
+                                        {
+                                            day: "numeric",
+                                            month: "long"
+                                        }
+                                    )
                                 }}
-                                ,
-                                <b
-                                    >{{ lesson.startTime }} -
-                                    {{ lesson.endTime }}
-                                </b>
+                                -
+                                {{
+                                    discipline.existingPeriod.end.toLocaleDateString(
+                                        "rus",
+                                        {
+                                            day: "numeric",
+                                            month: "long"
+                                        }
+                                    )
+                                }}
+                                {{
+                                    discipline.existingPeriod.end.toLocaleDateString(
+                                        "rus",
+                                        {
+                                            year: "numeric"
+                                        }
+                                    )
+                                }}
+                                г.
                             </span>
-                            <v-btn
-                                color="info"
-                                max-width="280"
-                                :to="'/disciplines/' + lesson.disciplineId"
-                                >Перейти к дисциплине
-                                <v-icon class="ml-auto"
-                                    >mdi-key-variant</v-icon
-                                ></v-btn
-                            >
                         </div>
                         <div>
                             <div class="d-flex flex-column text-left">
-                                <span class="caption">Вид занятия: </span>
-                                <span class="font-weight-bold">{{
-                                    lesson.type
-                                }}</span>
-                            </div>
-                            <div class="text-left">
-                                <span class="caption">Статус: </span>
-                                <v-overflow-btn
-                                    class="status-btn mt-0"
-                                    v-model="lesson.status"
-                                    :items="statusEnum"
-                                    :background-color="
-                                        currentLessonStatusObject.color
-                                    "
-                                    :disabled="
-                                        currentLessonStatusObject.disabled
-                                    "
-                                    @click="changeLessonStatus"
-                                    dark
-                                    label="Статус занятия"
-                                ></v-overflow-btn>
+                                <span class="caption">Виды занятия: </span>
+                                <span
+                                    class="font-weight-bold discipline-type"
+                                    v-for="(type, index) in discipline.types"
+                                    :key="index"
+                                    >{{ type }}</span
+                                >
                             </div>
                         </div>
                     </v-card-title>
@@ -69,10 +62,13 @@
                             color="primary darken-2"
                         >
                             <v-tab class="font-weight-bold">
-                                Оценки и посещаемость
+                                Текущая ведомость
                             </v-tab>
                             <v-tab class="font-weight-bold">
-                                Материалы занятия
+                                Ведомость сессии
+                            </v-tab>
+                            <v-tab class="font-weight-bold">
+                                Все занятия
                             </v-tab>
                         </v-tabs>
                     </div>
@@ -83,7 +79,6 @@
                                     <v-text-field
                                         v-model="studentsTableSearch"
                                         append-icon="mdi-account-search"
-                                        class="mb-2"
                                         label="Поиск"
                                         single-line
                                         hide-details
@@ -94,7 +89,7 @@
                                         :headers="studentsTableHeaders"
                                         :items="studentsTableData"
                                         :search="studentsTableSearch"
-                                        item-key="studentName"
+                                        item-key="id"
                                         no-data-text="Ничего не найдено"
                                         no-results-text="Ничего не найдено"
                                         :items-per-page="itemsPerPage"
@@ -103,10 +98,73 @@
                                         <template
                                             v-slot:item.studentName="{ item }"
                                         >
-                                            <StudentAvatar :studentName="item.studentName" :studentAvatar="item.studentAvatar" />
+                                            <StudentAvatar
+                                                :studentName="item.studentName"
+                                                :studentAvatar="
+                                                    item.studentAvatar
+                                                "
+                                            />
                                         </template>
                                         <template v-slot:item.marks="{ item }">
-                                            <TheMarkPicker v-on:change-marks-array="item.marks.push($event)" :marks="item.marks" :onClick="changeTable" />
+                                            <div class="my-2">
+                                                <div v-if="item.marks.length">
+                                                    <v-icon
+                                                        v-for="(mark,
+                                                        index) in item.marks"
+                                                        :key="index"
+                                                        :color="mark.color"
+                                                        >{{ mark.icon }}</v-icon
+                                                    >
+                                                </div>
+                                                <div v-else>
+                                                    Нет оценок
+                                                </div>
+                                            </div>
+                                            <v-menu left offset-x>
+                                                <template
+                                                    v-slot:activator="{ on }"
+                                                >
+                                                    <v-btn
+                                                        fab
+                                                        dark
+                                                        class="mb-2"
+                                                        x-small
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon
+                                                            >mdi-plus</v-icon
+                                                        >
+                                                    </v-btn>
+                                                </template>
+                                                <v-list>
+                                                    <v-list-item-group
+                                                        v-model="item.marks"
+                                                        multiple
+                                                    >
+                                                        <v-list-item
+                                                            v-for="(mark,
+                                                            index) in markEnum"
+                                                            :key="index"
+                                                            :value="mark"
+                                                            @click="
+                                                                changeTable()
+                                                            "
+                                                        >
+                                                            <v-list-item-title>
+                                                                {{ mark.text }}
+                                                            </v-list-item-title>
+                                                            <v-icon
+                                                                :color="
+                                                                    mark.color
+                                                                "
+                                                                >{{
+                                                                    mark.icon
+                                                                }}</v-icon
+                                                            >
+                                                        </v-list-item>
+                                                    </v-list-item-group>
+                                                </v-list>
+                                            </v-menu>
                                         </template>
                                     </v-data-table>
                                 </v-card-text>
@@ -120,100 +178,6 @@
                                         Отправить результаты
                                     </v-btn>
                                 </v-card-actions>
-                            </v-card>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-card flat>
-                                <v-card-text>
-                                    <v-card class="mb-2">
-                                        <v-card-text>
-                                            <b>Тема</b>
-                                            <v-text-field
-                                                v-model="lesson.theme"
-                                                :disabled="themeFieldDisabled"
-                                                single-line
-                                            >
-                                            </v-text-field>
-                                        </v-card-text>
-                                        <v-card-actions>
-                                            <v-btn
-                                                dark
-                                                color="black accent-4 mx-auto"
-                                                @click="
-                                                    themeFieldDisabled = !themeFieldDisabled
-                                                "
-                                            >
-                                                <v-icon>mdi-pencil</v-icon>
-                                            </v-btn>
-                                        </v-card-actions>
-                                    </v-card>
-                                    <v-card class="mb-2">
-                                        <v-card-text>
-                                            <b>Домашнее задание</b>
-                                            <v-textarea
-                                                v-model="lesson.homeWork"
-                                                :disabled="
-                                                    homeWorkFieldDisabled
-                                                "
-                                                counter
-                                                rows="4"
-                                                maxlength="120"
-                                                full-width
-                                                single-line
-                                            ></v-textarea>
-                                        </v-card-text>
-                                        <v-card-actions>
-                                            <v-btn
-                                                dark
-                                                color="black accent-4 mx-auto"
-                                                @click="
-                                                    homeWorkFieldDisabled = !homeWorkFieldDisabled
-                                                "
-                                            >
-                                                <v-icon>mdi-pencil</v-icon>
-                                            </v-btn>
-                                        </v-card-actions>
-                                    </v-card>
-                                    <v-card>
-                                        <v-card-text>
-                                            <b>Файлы</b>
-                                            <div
-                                                class="d-flex align-center mb-1"
-                                                v-for="(file,
-                                                index) in lesson.files"
-                                                :key="index"
-                                            >
-                                                <img
-                                                    width="40px"
-                                                    :src="
-                                                        require('@/assets/file-model/pdf.png')
-                                                    "
-                                                    alt=""
-                                                />
-                                                <span>
-                                                    {{ file }}
-                                                </span>
-                                            </div>
-                                        </v-card-text>
-                                        <v-card-actions>
-                                            <v-btn
-                                                dark
-                                                color="black accent-4 mx-auto"
-                                                @click="
-                                                    $refs.inputUpload.click()
-                                                "
-                                            >
-                                                <v-icon>mdi-plus</v-icon>
-                                            </v-btn>
-                                            <input
-                                                v-show="false"
-                                                ref="inputUpload"
-                                                type="file"
-                                                @click=""
-                                            />
-                                        </v-card-actions>
-                                    </v-card>
-                                </v-card-text>
                             </v-card>
                         </v-tab-item>
                     </v-tabs-items>
@@ -231,14 +195,15 @@
 
 <script>
 import statusEnum from "@/assets/js/enums/statusEnum.js";
-import StudentAvatar from "@/components/shared/StudentAvatar";
-import TheMarkPicker from "@/components/TheMarkPicker";
+import markEnum from "@/assets/js/enums/markEnum.js";
+import StudentAvatar from "@/components/shared/StudentAvatar.vue";
 
 export default {
     data() {
         return {
-            lesson: null,
+            discipline: null,
             statusEnum: Object.values(statusEnum),
+            markEnum: Object.values(markEnum),
             tab: 0,
             itemsPerPage: 5,
             choosenMark: 0,
@@ -270,6 +235,7 @@ export default {
             ],
             studentsTableData: [
                 {
+                    id: 1,
                     studentName: "Иванов И.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
@@ -279,6 +245,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 2,
                     studentName: "Борисов О.И.",
                     studentAvatar: "",
                     institute: "ИМИТ",
@@ -287,6 +254,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 3,
                     studentName: "Петрова И.Д.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/3.jpg",
@@ -296,6 +264,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 4,
                     studentName: "Сидоров К.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
@@ -305,6 +274,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 5,
                     studentName: "Круг Ш.О.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/4.jpg",
@@ -314,6 +284,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 6,
                     studentName: "Квадрат Т.Т.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/5.jpg",
@@ -323,6 +294,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 6,
                     studentName: "Сажин Ф.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
@@ -332,6 +304,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 7,
                     studentName: "Пажин С.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
@@ -341,6 +314,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 8,
                     studentName: "Важин В.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
@@ -350,6 +324,7 @@ export default {
                     marks: []
                 },
                 {
+                    id: 9,
                     studentName: "Квадро И.В.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
@@ -363,38 +338,30 @@ export default {
         };
     },
     components: {
-        StudentAvatar,
-        TheMarkPicker
+        StudentAvatar
     },
     mounted() {
-        this.getCurrentLessonData(this.$route.params.id);
+        this.getCurrentDisciplineData(this.$route.params.id);
     },
-    watch: {},
-    computed: {
-        currentLessonStatusObject() {
-            return this.statusEnum.find(status => {
-                return this.lesson.status === status.value;
-            });
-        }
-    },
+    computed: {},
     methods: {
-        getCurrentLessonData(id) {
+        getCurrentDisciplineData(id) {
             let promise = new Promise((res, rej) => {
                 setTimeout(() => {
-                    this.lesson = {
-                        id: 90909,
-                        disciplineId: 1,
+                    this.discipline = {
+                        id: 1,
                         number: 1,
-                        startTime: "8:00",
-                        endTime: "9:35",
                         title: "Теория игр",
-                        theme: "Теория игр и экономическое моделирование",
+                        themes: "Теория игр и экономическое моделирование",
                         homeWork:
                             "1. Сделать задание из прикреплённого файла\n2. Сравнить с расчётами",
                         files: ["file1.pdf", "расчеты.pdf"],
-                        type: "Лекция",
+                        types: ["Лекция", "Практика"],
                         date: new Date(2020, 1, 9),
-                        existingPeriod: "19.01.19 - 01.01.22",
+                        existingPeriod: {
+                            start: new Date(2020, 1, 9),
+                            end: new Date(2020, 6, 9)
+                        },
                         status: 0,
                         cabinet: "102",
                         corps: "ГК"
@@ -410,16 +377,16 @@ export default {
         },
         sendLessonResults() {
             this.isStudentsTableHasChanges = false;
-            console.log("send data about lesson");
+            console.log("send data about discipline");
         },
         changeLessonStatus() {
-            console.log("change lesson status");
+            console.log("change discipline status");
         }
     }
 };
 </script>
 
-<style>
+<style lang="scss">
 /* fix tabs slider on mobile */
 .v-slide-group__prev {
     display: none !important;
@@ -444,5 +411,13 @@ export default {
 
 .tab-content-card {
     min-height: 100vh;
+}
+
+.discipline-type {
+    &:not(:last-child) {
+        &::after {
+            content: ",";
+        }
+    }
 }
 </style>
