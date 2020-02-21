@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Schedule from "../views/Schedule.vue";
 import CurrentLesson from "../views/CurrentLesson.vue";
+import CurrentDiscipline from "../views/CurrentDiscipline.vue";
 import TimeTable from "../views/TimeTable.vue";
 import Students from "../views/Students.vue";
 import Disciplines from "../views/Disciplines.vue";
@@ -23,7 +24,7 @@ const routes = [
         }
     },
     {
-        path: "/schedule/lesson/:id",
+        path: "/schedule/lessons/:id",
         name: "schedule",
         component: CurrentLesson,
         meta: {
@@ -44,6 +45,14 @@ const routes = [
         component: Disciplines,
         meta: {
             rusRoute: "/ Дисциплины"
+        }
+    },
+    {
+        path: "/disciplines/:id",
+        name: "discipline",
+        component: CurrentDiscipline,
+        meta: {
+            rusRoute: "/ Расписание / Дисциплина"
         }
     },
     {
@@ -68,8 +77,8 @@ const router = new VueRouter({
     mode: "history",
     base: process.env.BASE_URL,
     routes,
-    scrollBehavior (to, from, savedPosition) {
-        return { x: 0, y: 0 }
+    scrollBehavior(to, from, savedPosition) {
+        return { x: 0, y: 0 };
     }
 });
 

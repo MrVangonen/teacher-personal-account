@@ -80,7 +80,7 @@
                 >
                     <template v-slot:activator="{ on }">
                         <v-text-field
-                            v-model="convertDatePickerDatesForTextField"
+                            v-model="outputDatesForDatePicker"
                             label="Выберите дату"
                             append-icon="mdi-calendar"
                             outlined
@@ -166,7 +166,13 @@ export default {
         datesForDatePicker: Array,
         datePickerMenu: false,
         currentYear: 0,
-        years: [
+        years: Array,
+        scheduleData: Object
+    }),
+    created() {
+        //default data - генериться на бакэнде!
+
+        this.years = [
             {
                 text: "2019/2020",
                 value: 0
@@ -183,20 +189,18 @@ export default {
                 text: "2016/2017",
                 value: 3
             }
-        ],
-        scheduleData: Object
-    }),
-    created() {
-        //default data
+        ];
+
+        let startDay = new Date(2020, 1, 17);
         this.scheduleData = {
             range: {
-                start: new Date(),
-                end: this.DateAddDays(new Date(), 6),
+                start: startDay,
+                end: this.DateAddDays(startDay, 6),
                 weekName: "числитель"
             },
             schedule: [
                 {
-                    date: new Date(),
+                    date: startDay,
                     value: 0,
                     lessons: [
                         {
@@ -226,11 +230,11 @@ export default {
                     ]
                 },
                 {
-                    date: this.DateAddDays(new Date(), 1),
+                    date: this.DateAddDays(startDay, 1),
                     value: 1
                 },
                 {
-                    date: this.DateAddDays(new Date(), 2),
+                    date: this.DateAddDays(startDay, 2),
                     value: 2,
                     lessons: [
                         {
@@ -260,19 +264,19 @@ export default {
                     ]
                 },
                 {
-                    date: this.DateAddDays(new Date(), 3),
+                    date: this.DateAddDays(startDay, 3),
                     value: 3
                 },
                 {
-                    date: this.DateAddDays(new Date(), 4),
+                    date: this.DateAddDays(startDay, 4),
                     value: 4
                 },
                 {
-                    date: this.DateAddDays(new Date(), 5),
+                    date: this.DateAddDays(startDay, 5),
                     value: 5
                 },
                 {
-                    date: this.DateAddDays(new Date(), 6),
+                    date: this.DateAddDays(startDay, 6),
                     disabled: true,
                     value: 6
                 }
@@ -287,42 +291,47 @@ export default {
     computed: {
         currentDay: {
             get() {
-                let currentEngDay = new Date().getDay();
-                let currentRusDayWithoutSunDay =
-                    currentEngDay === 0 ? null : currentEngDay - 1;
-                return [currentRusDayWithoutSunDay];
+                return [this.rusDayOfWeek(new Date())];
             },
-            set(newName) {
-                return newName;
+            set(value) {
+                return value;
             }
         },
-        convertDatePickerDatesForTextField() {
+        /* TODO: Присылать две даты с бэкенда в замен этой функции */
+        outputDatesForDatePicker() {
             if (Array.isArray(this.datesForDatePicker)) {
                 if (this.datesForDatePicker.length === 2) {
-                    return `${new Date(
-                        this.datesForDatePicker[0]
-                    ).toLocaleDateString("rus")} ~ ${new Date(
-                        this.datesForDatePicker[1]
-                    ).toLocaleDateString("rus")}`;
+                    return this.convertDatesForDatePickerTextField(
+                        new Date(this.datesForDatePicker[0]),
+                        new Date(this.datesForDatePicker[1])
+                    );
                 } else if (this.datesForDatePicker.length === 1) {
-                    return this.firstAndLastDayOfWeek();
+                    //запрос на бакенд
+                    return this.firstAndLastDayOfWeek;
                 }
             }
         },
+        /* Возвращает первый и последний день недели по одной дате для datePicker */
+        /* TODO: Присылать две даты с бэкенда в замен этой функции */
         firstAndLastDayOfWeek() {
-            //TODO: лучше обробатывать даты на бакэнде
             let date = new Date(this.datesForDatePicker[0]);
             let rusDayOfWeek = this.rusDayOfWeek(date);
             let monday = this.DateSubDays(date, rusDayOfWeek);
             let sunday = this.DateAddDays(monday, 6);
+
             this.datesForDatePicker = [
                 this.convertDayForDatePicker(monday),
                 this.convertDayForDatePicker(sunday)
             ];
-            return `${monday} ~ ${sunday}`;
+            return this.convertDatesForDatePickerTextField(monday, sunday);
         }
     },
     methods: {
+        convertDatesForDatePickerTextField(dateStart, dateEnd) {
+            return `${dateStart.toLocaleDateString(
+                "rus"
+            )} ~ ${dateEnd.toLocaleDateString("rus")}`;
+        },
         sendRequestForSchedule() {
             console.log("request is going");
         },
@@ -338,7 +347,9 @@ export default {
             return date.getDay() === 0 ? 6 : date.getDay() - 1;
         },
         convertDayForDatePicker(day) {
-            return day.toISOString().substr(0, 10);
+            return `${day.getFullYear()}-${day.toLocaleDateString("ru", {
+                month: "2-digit"
+            })}-${day.toLocaleDateString("ru", { day: "2-digit" })}`;
         }
     }
 };

@@ -6,13 +6,13 @@
                     <v-card-title
                         class="text-center justify-space-between align-start py-6 grey lighten-5"
                     >
-                        <div>
+                        <div class="d-flex flex-column align-center">
                             <h1
                                 class="font-weight-bold display-3 primary--text pb-2"
                             >
                                 {{ lesson.title }}
                             </h1>
-                            <span>
+                            <span class="mb-2">
                                 {{
                                     lesson.date.toLocaleDateString("rus", {
                                         day: "numeric",
@@ -26,6 +26,15 @@
                                     {{ lesson.endTime }}
                                 </b>
                             </span>
+                            <v-btn
+                                color="info"
+                                max-width="280"
+                                :to="'/disciplines/' + lesson.disciplineId"
+                                >Перейти к дисциплине
+                                <v-icon class="ml-auto"
+                                    >mdi-key-variant</v-icon
+                                ></v-btn
+                            >
                         </div>
                         <div>
                             <div class="d-flex flex-column text-left">
@@ -46,7 +55,7 @@
                                     :disabled="
                                         currentLessonStatusObject.disabled
                                     "
-                                    @click=""
+                                    @click="changeLessonStatus"
                                     dark
                                     label="Статус занятия"
                                 ></v-overflow-btn>
@@ -71,18 +80,15 @@
                         <v-tab-item>
                             <v-card flat>
                                 <v-card-text class="tab-content-card">
-                                    <v-card-title>
-                                        <v-text-field
-                                            v-model="studentsTableSearch"
-                                            append-icon="mdi-account-search"
-                                            label="Поиск"
-                                            single-line
-                                            hide-details
-                                        ></v-text-field>
-                                    </v-card-title>
+                                    <v-text-field
+                                        v-model="studentsTableSearch"
+                                        append-icon="mdi-account-search"
+                                        class="mb-2"
+                                        label="Поиск"
+                                        single-line
+                                        hide-details
+                                    ></v-text-field>
                                     <v-data-table
-                                        v-model="studentsTableSelected"
-                                        @input="changeTable()"
                                         :headers="studentsTableHeaders"
                                         :items="studentsTableData"
                                         :search="studentsTableSearch"
@@ -90,92 +96,39 @@
                                         no-data-text="Ничего не найдено"
                                         no-results-text="Ничего не найдено"
                                         :items-per-page="itemsPerPage"
-                                        show-select
+                                        :value="[]"
                                     >
+                                        <template
+                                            v-slot:item.isSelected="{
+                                                item
+                                            }"
+                                        >
+                                            <v-checkbox
+                                                v-model="item.isSelected"
+                                                @input="
+                                                    changeSelectedItemState(
+                                                        item
+                                                    )
+                                                "
+                                                @change="changeTable()"
+                                            ></v-checkbox>
+                                        </template>
                                         <template
                                             v-slot:item.studentName="{ item }"
                                         >
-                                            <v-avatar
-                                                size="32"
-                                                color="primary"
-                                                class="mr-2"
-                                            >
-                                                <img
-                                                    v-if="item.studentAvatar"
-                                                    :src="item.studentAvatar"
-                                                />
-                                                <span
-                                                    class="white--text"
-                                                    v-else
-                                                    >{{
-                                                        item.studentName[0]
-                                                    }}</span
-                                                >
-                                            </v-avatar>
-                                            <span class="font-weight-bold">
-                                                {{ item.studentName }}
-                                            </span>
+                                            <StudentAvatar
+                                                :studentName="item.studentName"
+                                                :studentAvatar="
+                                                    item.studentAvatar
+                                                "
+                                            />
                                         </template>
                                         <template v-slot:item.marks="{ item }">
-                                            <div class="my-2">
-                                                <div v-if="item.marks.length">
-                                                    <v-icon
-                                                        v-for="(mark,
-                                                        index) in item.marks"
-                                                        :key="index"
-                                                        :color="mark.color"
-                                                        >{{ mark.icon }}</v-icon
-                                                    >
-                                                </div>
-                                                <div v-else>
-                                                    Нет оценок
-                                                </div>
-                                            </div>
-                                            <v-menu left offset-x>
-                                                <template
-                                                    v-slot:activator="{ on }"
-                                                >
-                                                    <v-btn
-                                                        fab
-                                                        dark
-                                                        class="mb-2"
-                                                        x-small
-                                                        v-on="on"
-                                                    >
-                                                        <v-icon
-                                                            >mdi-plus</v-icon
-                                                        >
-                                                    </v-btn>
-                                                </template>
-                                                <v-list>
-                                                    <v-list-item-group
-                                                        v-model="item.marks"
-                                                        multiple
-                                                    >
-                                                        <v-list-item
-                                                            v-for="(mark,
-                                                            index) in markEnum"
-                                                            :key="index"
-                                                            :value="mark"
-                                                            @click="
-                                                                changeTable()
-                                                            "
-                                                        >
-                                                            <v-list-item-title>
-                                                                {{ mark.text }}
-                                                            </v-list-item-title>
-                                                            <v-icon
-                                                                :color="
-                                                                    mark.color
-                                                                "
-                                                                >{{
-                                                                    mark.icon
-                                                                }}</v-icon
-                                                            >
-                                                        </v-list-item>
-                                                    </v-list-item-group>
-                                                </v-list>
-                                            </v-menu>
+                                            <TheMarkPicker
+                                                :marks.sync="item.marks"
+                                                :onClick="changeTable"
+                                                :disabled="!item.isSelected"
+                                            />
                                         </template>
                                     </v-data-table>
                                 </v-card-text>
@@ -299,15 +252,15 @@
 </template>
 
 <script>
-import statusEnum from "../assets/js/enums/statusEnum.js";
-import markEnum from "../assets/js/enums/markEnum.js";
+import statusEnum from "@/assets/js/enums/statusEnum.js";
+import StudentAvatar from "@/components/shared/StudentAvatar";
+import TheMarkPicker from "@/components/TheMarkPicker";
 
 export default {
     data() {
         return {
             lesson: null,
             statusEnum: Object.values(statusEnum),
-            markEnum: Object.values(markEnum),
             tab: 0,
             itemsPerPage: 5,
             choosenMark: 0,
@@ -316,6 +269,11 @@ export default {
             studentsTableSearch: "",
             isStudentsTableHasChanges: false,
             studentsTableHeaders: [
+                {
+                    value: "isSelected",
+                    filterable: false,
+                    sortable: false
+                },
                 {
                     text: "Студент",
                     align: "left",
@@ -345,6 +303,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 6,
                     cyberTrack: "+ 2 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -353,6 +313,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 9,
                     cyberTrack: "+ 1 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -362,6 +324,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 16,
                     cyberTrack: "+ 3 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -371,6 +335,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 3,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -380,6 +346,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 16,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -389,6 +357,8 @@ export default {
                     institute: 375,
                     groop: 0.0,
                     cyberTrack: "+ 2 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -398,6 +368,8 @@ export default {
                     institute: 392,
                     groop: 0.2,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -407,6 +379,8 @@ export default {
                     institute: 408,
                     groop: 3.2,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -416,6 +390,8 @@ export default {
                     institute: 452,
                     groop: 25.0,
                     cyberTrack: "+ 2 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -425,14 +401,20 @@ export default {
                     institute: 518,
                     groop: 26.0,
                     cyberTrack: "",
+                    isSelected: true,
                     marks: []
                 }
             ],
             studentsTableSelected: []
         };
     },
-    mounted() {
+    components: {
+        StudentAvatar,
+        TheMarkPicker
+    },
+    created() {
         this.getCurrentLessonData(this.$route.params.id);
+        this.studentsTableSelected = this.studentsTableData; // Select all students
     },
     watch: {},
     computed: {
@@ -453,8 +435,7 @@ export default {
                         startTime: "8:00",
                         endTime: "9:35",
                         title: "Теория игр",
-                        theme:
-                            "Иностранный язык в истории государтсва российского",
+                        theme: "Теория игр и экономическое моделирование",
                         homeWork:
                             "1. Сделать задание из прикреплённого файла\n2. Сравнить с расчётами",
                         files: ["file1.pdf", "расчеты.pdf"],
@@ -474,9 +455,15 @@ export default {
                 ? (this.isStudentsTableHasChanges = true)
                 : false;
         },
+        changeSelectedItemState(item) {
+            item.isSelected = !item.isSelected;
+        },
         sendLessonResults() {
             this.isStudentsTableHasChanges = false;
             console.log("send data about lesson");
+        },
+        changeLessonStatus() {
+            console.log("change lesson status");
         }
     }
 };
