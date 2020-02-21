@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer
         app
-        v-bind="isMobileDevice"
+        v-bind="navigationVariant"
         v-model="navOptions.isNavButtonMobileClicked"
         class="navigation-drawer"
     >
@@ -9,13 +9,13 @@
             <v-list>
                 <v-list-item>
                     <v-list-item-avatar size="60">
-                        <v-img
-                            :src="require('@/assets/musk.png')"
-                        ></v-img>
+                        <v-img :src="require('@/assets/musk.png')"></v-img>
                         <!-- <v-icon dark>mdi-account-circle</v-icon> -->
                     </v-list-item-avatar>
                 </v-list-item>
-                <v-list-group>
+                <v-list-group
+                    v-if="isMobile || !navOptions.isNavButtonDesktopClicked"
+                >
                     <template v-slot:activator>
                         <v-list-item-content>
                             <v-list-item-title class="title">
@@ -26,20 +26,21 @@
                             </v-list-item-subtitle>
                         </v-list-item-content>
                     </template>
-                    <v-list-item
-                        v-for="(item, index) in personMenuItems"
-                        :key="index"
-                        router
-                        :to="item.link"
-                        dense
-                        link
-                    >
-                        <v-list-item-title v-text="item.text">
-                        </v-list-item-title>
-                        <v-list-item-icon>
-                            <v-icon v-text="item.icon"></v-icon>
-                        </v-list-item-icon>
-                    </v-list-item>
+                    <v-list-item-group>
+                        <v-list-item
+                            v-for="(item, index) in personMenuItems"
+                            :key="index"
+                            router
+                            :to="item.link"
+                            dense
+                        >
+                            <v-list-item-title v-text="item.text">
+                            </v-list-item-title>
+                            <v-list-item-icon>
+                                <v-icon v-text="item.icon"></v-icon>
+                            </v-list-item-icon>
+                        </v-list-item>
+                    </v-list-item-group>
                 </v-list-group>
             </v-list>
         </template>
@@ -118,22 +119,25 @@ export default {
                     link: "/appeals"
                 }
             ],
-            activeRouteIndex: 0
+            activeRouteIndex: 0,
+            activeSettingsIndex: 0
         };
     },
     computed: {
-        isMobileDevice() {
-            if (this.$vuetify.breakpoint.xsOnly) {
+        navigationVariant() {
+            if (this.isMobile) {
                 return {
                     absolute: true
                 };
             } else {
                 return {
-                    "expand-on-hover": this.navOptions
-                        .isNavButtonDesktopClicked,
+                    "mini-variant": this.navOptions.isNavButtonDesktopClicked,
                     permanent: true
                 };
             }
+        },
+        isMobile() {
+            return this.$vuetify.breakpoint.xsOnly;
         }
     },
     methods: {}
@@ -142,7 +146,7 @@ export default {
 
 <style lang="scss">
 .navigation-drawer {
-    z-index: 999!important;
-    height: 100%!important;
+    z-index: 999 !important;
+    height: 100% !important;
 }
 </style>

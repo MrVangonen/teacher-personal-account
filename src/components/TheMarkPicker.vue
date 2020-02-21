@@ -15,7 +15,14 @@
         </div>
         <v-menu left offset-x>
             <template v-slot:activator="{ on }">
-                <v-btn fab dark class="mb-2" x-small v-on="on">
+                <v-btn
+                    fab
+                    class="mb-2"
+                    x-small
+                    v-on="on"
+                    :disabled="disabled"
+                    :dark="!disabled"
+                >
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
             </template>
@@ -25,7 +32,7 @@
                         v-for="(mark, index) in markEnum"
                         :key="index"
                         :value="mark"
-                        @click="onClick(); $emit('change-marks-array', mark);"
+                        @click="onClick()"
                     >
                         <v-list-item-title>
                             {{ mark.text }}
@@ -44,12 +51,13 @@ import markEnum from "@/assets/js/enums/markEnum.js";
 export default {
     data() {
         return {
-            markEnum: Object.values(markEnum)
+            markEnum: Object.values(markEnum),
         };
     },
     props: {
         onClick: Function,
-        marks: Array
+        marks: Array,
+        disabled: Boolean
     },
     computed: {
         localMarks: {
@@ -57,6 +65,7 @@ export default {
                 return this.marks;
             },
             set(value) {
+                this.$emit("update:marks", value);
                 return value;
             }
         }

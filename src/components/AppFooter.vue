@@ -50,21 +50,23 @@
                 </v-btn>
             </v-card-text>
             <v-divider dark class="mx-4"></v-divider>
-            <v-card-text class="white--text">
+            <v-card-text class="white--text d-flex flex-wrap justify-center align-center">
                 <span>
                     {{ new Date().getFullYear() }} —
                     <strong>Личный кабинет Преподавателя ПетрГу</strong>
                 </span>
-                <v-btn
-                    v-for="icon in icons"
-                    :key="icon.name"
-                    class="mx-4 white--text"
-                    :href="icon.link"
-                    target="blank"
-                    icon
-                >
-                    <v-icon size="24">{{ icon.name }}</v-icon>
-                </v-btn>
+                <div>
+                    <v-btn
+                        v-for="icon in icons"
+                        :key="icon.name"
+                        class="mx-4 white--text"
+                        :href="icon.link"
+                        target="blank"
+                        icon
+                    >
+                        <v-icon size="24">{{ icon.name }}</v-icon>
+                    </v-btn>
+                </div>
             </v-card-text>
         </v-card>
     </v-footer>

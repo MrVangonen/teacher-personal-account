@@ -46,12 +46,21 @@
                         <div>
                             <div class="d-flex flex-column text-left">
                                 <span class="caption">Виды занятия: </span>
-                                <span
-                                    class="font-weight-bold discipline-type"
-                                    v-for="(type, index) in discipline.types"
-                                    :key="index"
-                                    >{{ type }}</span
-                                >
+                                <div>
+                                    <span
+                                        class="font-weight-bold discipline-type"
+                                        v-for="(type,
+                                        index) in discipline.types"
+                                        :key="index"
+                                        >{{ type }}</span
+                                    >
+                                </div>
+                                <span class="caption">
+                                    Форма контроля:
+                                </span>
+                                <span class="font-weight-bold">
+                                    {{ discipline.controlForm }}
+                                </span>
                             </div>
                         </div>
                     </v-card-title>
@@ -352,6 +361,7 @@ export default {
                         id: 1,
                         number: 1,
                         title: "Теория игр",
+                        controlForm: "Экзамен",
                         themes: "Теория игр и экономическое моделирование",
                         homeWork:
                             "1. Сделать задание из прикреплённого файла\n2. Сравнить с расчётами",
@@ -416,7 +426,7 @@ export default {
 .discipline-type {
     &:not(:last-child) {
         &::after {
-            content: ",";
+            content: ", ";
         }
     }
 }

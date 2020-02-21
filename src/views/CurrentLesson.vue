@@ -89,8 +89,6 @@
                                         hide-details
                                     ></v-text-field>
                                     <v-data-table
-                                        v-model="studentsTableSelected"
-                                        @input="changeTable()"
                                         :headers="studentsTableHeaders"
                                         :items="studentsTableData"
                                         :search="studentsTableSearch"
@@ -98,15 +96,39 @@
                                         no-data-text="Ничего не найдено"
                                         no-results-text="Ничего не найдено"
                                         :items-per-page="itemsPerPage"
-                                        show-select
+                                        :value="[]"
                                     >
+                                        <template
+                                            v-slot:item.isSelected="{
+                                                item
+                                            }"
+                                        >
+                                            <v-checkbox
+                                                v-model="item.isSelected"
+                                                @input="
+                                                    changeSelectedItemState(
+                                                        item
+                                                    )
+                                                "
+                                                @change="changeTable()"
+                                            ></v-checkbox>
+                                        </template>
                                         <template
                                             v-slot:item.studentName="{ item }"
                                         >
-                                            <StudentAvatar :studentName="item.studentName" :studentAvatar="item.studentAvatar" />
+                                            <StudentAvatar
+                                                :studentName="item.studentName"
+                                                :studentAvatar="
+                                                    item.studentAvatar
+                                                "
+                                            />
                                         </template>
                                         <template v-slot:item.marks="{ item }">
-                                            <TheMarkPicker v-on:change-marks-array="item.marks.push($event)" :marks="item.marks" :onClick="changeTable" />
+                                            <TheMarkPicker
+                                                :marks.sync="item.marks"
+                                                :onClick="changeTable"
+                                                :disabled="!item.isSelected"
+                                            />
                                         </template>
                                     </v-data-table>
                                 </v-card-text>
@@ -248,6 +270,11 @@ export default {
             isStudentsTableHasChanges: false,
             studentsTableHeaders: [
                 {
+                    value: "isSelected",
+                    filterable: false,
+                    sortable: false
+                },
+                {
                     text: "Студент",
                     align: "left",
                     value: "studentName"
@@ -276,6 +303,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 6,
                     cyberTrack: "+ 2 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -284,6 +313,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 9,
                     cyberTrack: "+ 1 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -293,6 +324,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 16,
                     cyberTrack: "+ 3 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -302,6 +335,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 3,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -311,6 +346,8 @@ export default {
                     institute: "ИМИТ",
                     groop: 16,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -320,6 +357,8 @@ export default {
                     institute: 375,
                     groop: 0.0,
                     cyberTrack: "+ 2 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -329,6 +368,8 @@ export default {
                     institute: 392,
                     groop: 0.2,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -338,6 +379,8 @@ export default {
                     institute: 408,
                     groop: 3.2,
                     cyberTrack: "",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -347,6 +390,8 @@ export default {
                     institute: 452,
                     groop: 25.0,
                     cyberTrack: "+ 2 файла",
+
+                    isSelected: true,
                     marks: []
                 },
                 {
@@ -356,6 +401,7 @@ export default {
                     institute: 518,
                     groop: 26.0,
                     cyberTrack: "",
+                    isSelected: true,
                     marks: []
                 }
             ],
@@ -366,8 +412,9 @@ export default {
         StudentAvatar,
         TheMarkPicker
     },
-    mounted() {
+    created() {
         this.getCurrentLessonData(this.$route.params.id);
+        this.studentsTableSelected = this.studentsTableData; // Select all students
     },
     watch: {},
     computed: {
@@ -407,6 +454,9 @@ export default {
             !this.isStudentsTableHasChanges
                 ? (this.isStudentsTableHasChanges = true)
                 : false;
+        },
+        changeSelectedItemState(item) {
+            item.isSelected = !item.isSelected;
         },
         sendLessonResults() {
             this.isStudentsTableHasChanges = false;

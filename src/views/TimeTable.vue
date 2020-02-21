@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1 class="text-center">Учебный календарь на {{ currentYear }} год</h1>
-        <Calendar :timeRanges="timeRanges" :currentYear="currentYear"/>
+        <Calendar v-once :timeRanges="timeRanges" :currentYear="currentYear"/>
     </div>
 </template>
 
