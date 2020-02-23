@@ -95,7 +95,7 @@
                                         item-key="studentName"
                                         no-data-text="Ничего не найдено"
                                         no-results-text="Ничего не найдено"
-                                        :items-per-page="itemsPerPage"
+                                        :items-per-page="studentsTableitemsPerPage"
                                         :value="[]"
                                     >
                                         <template
@@ -198,23 +198,53 @@
                                     </v-card>
                                     <v-card>
                                         <v-card-text>
-                                            <b>Файлы</b>
-                                            <div
-                                                class="d-flex align-center mb-1"
-                                                v-for="(file,
-                                                index) in lesson.files"
-                                                :key="index"
-                                            >
-                                                <img
-                                                    width="40px"
-                                                    :src="
-                                                        require('@/assets/file-model/pdf.png')
-                                                    "
-                                                    alt=""
-                                                />
-                                                <span>
-                                                    {{ file }}
-                                                </span>
+                                            <div class="font-weight-bold mb-4">
+                                                Файлы
+                                            </div>
+                                            <div class="files-container">
+                                                <div v-if="lesson.files.length">
+                                                    <div
+                                                        class="d-flex align-center mb-1"
+                                                        v-for="(file,
+                                                        index) in lesson.files"
+                                                        :key="index"
+                                                    >
+                                                        <img
+                                                            width="40px"
+                                                            :src="
+                                                                getFileFormatImage(
+                                                                    file
+                                                                )
+                                                            "
+                                                            alt="file"
+                                                        />
+                                                        <span>
+                                                            {{ file }}
+                                                        </span>
+                                                        <v-btn
+                                                            class="ml-auto"
+                                                            icon
+                                                            @click="
+                                                                deleteFile(
+                                                                    index
+                                                                )
+                                                            "
+                                                        >
+                                                            <v-icon>
+                                                                mdi-close
+                                                            </v-icon>
+                                                        </v-btn>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="d-flex justify-center align-center no-files"
+                                                    v-else
+                                                >
+                                                    <span
+                                                        >Нет загруженных
+                                                        файлов</span
+                                                    >
+                                                </div>
                                             </div>
                                         </v-card-text>
                                         <v-card-actions>
@@ -231,7 +261,8 @@
                                                 v-show="false"
                                                 ref="inputUpload"
                                                 type="file"
-                                                @click=""
+                                                @change="onFileChange"
+                                                multiple
                                             />
                                         </v-card-actions>
                                     </v-card>
@@ -253,6 +284,7 @@
 
 <script>
 import statusEnum from "@/assets/js/enums/statusEnum.js";
+import fileFormatEnum from "@/assets/js/enums/fileFormatEnum.js";
 import StudentAvatar from "@/components/shared/StudentAvatar";
 import TheMarkPicker from "@/components/TheMarkPicker";
 
@@ -261,9 +293,9 @@ export default {
         return {
             lesson: null,
             statusEnum: Object.values(statusEnum),
+            fileFormatEnum,
             tab: 0,
-            itemsPerPage: 5,
-            choosenMark: 0,
+            studentsTableitemsPerPage: 5,
             themeFieldDisabled: true,
             homeWorkFieldDisabled: true,
             studentsTableSearch: "",
@@ -303,7 +335,6 @@ export default {
                     institute: "ИМИТ",
                     groop: 6,
                     cyberTrack: "+ 2 файла",
-
                     isSelected: true,
                     marks: []
                 },
@@ -313,7 +344,6 @@ export default {
                     institute: "ИМИТ",
                     groop: 9,
                     cyberTrack: "+ 1 файла",
-
                     isSelected: true,
                     marks: []
                 },
@@ -324,7 +354,6 @@ export default {
                     institute: "ИМИТ",
                     groop: 16,
                     cyberTrack: "+ 3 файла",
-
                     isSelected: true,
                     marks: []
                 },
@@ -438,7 +467,13 @@ export default {
                         theme: "Теория игр и экономическое моделирование",
                         homeWork:
                             "1. Сделать задание из прикреплённого файла\n2. Сравнить с расчётами",
-                        files: ["file1.pdf", "расчеты.pdf"],
+                        files: [
+                            "file1.pdf",
+                            "расчеты.pdf",
+                            "расчеты2.txt",
+                            "image.png",
+                            "document.doc"
+                        ],
                         type: "Лекция",
                         date: new Date(2020, 1, 9),
                         existingPeriod: "19.01.19 - 01.01.22",
@@ -457,6 +492,7 @@ export default {
         },
         changeSelectedItemState(item) {
             item.isSelected = !item.isSelected;
+            item.marks = [];
         },
         sendLessonResults() {
             this.isStudentsTableHasChanges = false;
@@ -464,12 +500,39 @@ export default {
         },
         changeLessonStatus() {
             console.log("change lesson status");
+        },
+        getFileFormatImage(file) {
+            let dotIndex = file.lastIndexOf(".");
+            let extension = file.slice(dotIndex + 1);
+
+            let findedFormat = this.fileFormatEnum.find(fmt => {
+                return fmt.extensions.find(ext => {
+                    return ext === extension;
+                });
+            });
+
+            if (findedFormat) {
+                return require(`@/assets/img/file-formats/${findedFormat.src}`);
+            } else {
+                return require("@/assets/img/file-formats/default-file.svg");
+            }
+        },
+        onFileChange(e) {
+            var files = e.target.files || e.dataTransfer.files;
+            if (!files.length) return;
+
+            Array.from(files).forEach(file => {
+                this.lesson.files.push(file.name);
+            });
+        },
+        deleteFile(index) {
+            this.lesson.files.splice(index, 1);
         }
     }
 };
 </script>
 
-<style>
+<style lang="scss">
 /* fix tabs slider on mobile */
 .v-slide-group__prev {
     display: none !important;
@@ -494,5 +557,14 @@ export default {
 
 .tab-content-card {
     min-height: 100vh;
+}
+
+.files-container {
+    height: 200px;
+    overflow-y: auto;
+
+    & .no-files {
+        height: 100%;
+    }
 }
 </style>

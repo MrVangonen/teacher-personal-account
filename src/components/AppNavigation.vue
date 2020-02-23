@@ -9,7 +9,7 @@
             <v-list>
                 <v-list-item>
                     <v-list-item-avatar size="60">
-                        <v-img :src="require('@/assets/musk.png')"></v-img>
+                        <v-img :src="require('@/assets/img/musk.png')"></v-img>
                         <!-- <v-icon dark>mdi-account-circle</v-icon> -->
                     </v-list-item-avatar>
                 </v-list-item>
