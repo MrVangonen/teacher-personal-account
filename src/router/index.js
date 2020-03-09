@@ -1,12 +1,12 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Schedule from "../views/Schedule.vue";
-import CurrentLesson from "../views/CurrentLesson.vue";
-import CurrentDiscipline from "../views/CurrentDiscipline.vue";
-import TimeTable from "../views/TimeTable.vue";
-import Students from "../views/Students.vue";
-import Disciplines from "../views/Disciplines.vue";
-import Appeals from "../views/Appeals.vue";
+const CurrentLesson = () => import("../views/CurrentLesson.vue");
+const CurrentDiscipline = () => import("../views/CurrentDiscipline.vue");
+const TimeTable = () => import("../views/TimeTable.vue");
+const Students = () => import("../views/Students.vue");
+const Disciplines = () => import("../views/Disciplines.vue");
+const Appeals = () => import("../views/Appeals.vue");
 
 Vue.use(VueRouter);
 
