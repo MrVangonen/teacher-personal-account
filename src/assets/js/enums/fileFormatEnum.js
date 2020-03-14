@@ -20,7 +20,7 @@ const FileFormats = [
         src: "xlsx.png"
     },
     {
-        extensions: ["zip"],
+        extensions: ["zip", "rar"],
         src: "zip.png"
     },
     {

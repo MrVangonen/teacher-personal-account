@@ -2,7 +2,9 @@
     <div>
         <div v-if="lesson">
             <div>
-                <v-card>
+                <v-card
+                elevation="0"
+                >
                     <v-card-title
                         class="text-center justify-space-between align-start py-6 grey lighten-5"
                     >
@@ -133,14 +135,18 @@
                                     </v-data-table>
                                 </v-card-text>
                                 <v-card-actions>
-                                    <v-btn
-                                        color="success mb-4 ml-2"
-                                        x-large
-                                        :disabled="!isStudentsTableHasChanges"
-                                        @click="sendLessonResults()"
-                                    >
-                                        Отправить результаты
-                                    </v-btn>
+                                    <div class="ml-2 mb-4">
+                                        <v-btn
+                                            color="success"
+                                            x-large
+                                            :disabled="
+                                                !isStudentsTableHasChanges
+                                            "
+                                            @click="sendLessonResults()"
+                                        >
+                                            Сохранить результаты
+                                        </v-btn>
+                                    </div>
                                 </v-card-actions>
                             </v-card>
                         </v-tab-item>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="avatar-container">
         <v-avatar size="32" color="primary" class="mr-2">
             <img v-if="studentAvatar" :src="studentAvatar" />
             <span class="white--text" v-else>{{ studentName[0] }} </span>
@@ -19,4 +19,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.avatar-container {
+  white-space: nowrap;
+}
+</style>

@@ -77,6 +77,12 @@ export default {
     methods: {
         deleteMark(index) {
             this.localMarks.splice(index, 1);
+        },
+        getMarkObject(value) {
+            debugger
+            return markEnum.find((mark) => {
+                return mark.value === value;
+            })
         }
     }
 };

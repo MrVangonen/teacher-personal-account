@@ -2,7 +2,7 @@
     <div>
         <div v-if="discipline">
             <div>
-                <v-card>
+                <v-card elevation="0">
                     <v-card-title
                         class="text-center justify-space-between align-start py-6 grey lighten-5"
                     >
@@ -86,23 +86,21 @@
                             <v-card flat>
                                 <v-card-text class="tab-content-card">
                                     <v-text-field
-                                        v-model="studentsTableSearch"
+                                        v-model="currentStatementTableSearch"
                                         append-icon="mdi-account-search"
                                         label="Поиск"
                                         single-line
                                         hide-details
                                     ></v-text-field>
                                     <v-data-table
-                                        v-model="studentsTableSelected"
                                         @input="changeTable()"
-                                        :headers="studentsTableHeaders"
-                                        :items="studentsTableData"
-                                        :search="studentsTableSearch"
+                                        :headers="currentStatementTableHeaders"
+                                        :items="currentStatementTableData"
+                                        :search="currentStatementTableSearch"
                                         item-key="id"
                                         no-data-text="Ничего не найдено"
                                         no-results-text="Ничего не найдено"
                                         :items-per-page="itemsPerPage"
-                                        show-select
                                     >
                                         <template
                                             v-slot:item.studentName="{ item }"
@@ -114,66 +112,49 @@
                                                 "
                                             />
                                         </template>
-                                        <template v-slot:item.marks="{ item }">
-                                            <div class="my-2">
-                                                <div v-if="item.marks.length">
-                                                    <v-icon
-                                                        v-for="(mark,
-                                                        index) in item.marks"
-                                                        :key="index"
-                                                        :color="mark.color"
-                                                        >{{ mark.icon }}</v-icon
-                                                    >
-                                                </div>
-                                                <div v-else>
-                                                    Нет оценок
-                                                </div>
-                                            </div>
-                                            <v-menu left offset-x>
-                                                <template
-                                                    v-slot:activator="{ on }"
+                                        <template v-slot:body="props">
+                                            <tr v-for="item in props.items">
+                                                <td>
+                                                    <StudentAvatar
+                                                        :studentName="
+                                                            item.studentName
+                                                        "
+                                                        :studentAvatar="
+                                                            item.studentAvatar
+                                                        "
+                                                    />
+                                                </td>
+                                                <td
+                                                    v-for="(lesson,
+                                                    index) in currentStatementLessons"
                                                 >
-                                                    <v-btn
-                                                        fab
-                                                        dark
-                                                        class="mb-2"
-                                                        x-small
-                                                        v-on="on"
-                                                    >
-                                                        <v-icon
-                                                            >mdi-plus</v-icon
-                                                        >
-                                                    </v-btn>
-                                                </template>
-                                                <v-list>
-                                                    <v-list-item-group
-                                                        v-model="item.marks"
-                                                        multiple
-                                                    >
-                                                        <v-list-item
-                                                            v-for="(mark,
-                                                            index) in markEnum"
-                                                            :key="index"
-                                                            :value="mark"
-                                                            @click="
-                                                                changeTable()
-                                                            "
-                                                        >
-                                                            <v-list-item-title>
-                                                                {{ mark.text }}
-                                                            </v-list-item-title>
-                                                            <v-icon
-                                                                :color="
-                                                                    mark.color
-                                                                "
-                                                                >{{
-                                                                    mark.icon
-                                                                }}</v-icon
-                                                            >
-                                                        </v-list-item>
-                                                    </v-list-item-group>
-                                                </v-list>
-                                            </v-menu>
+                                                    <TheMarkPicker
+                                                        :marks.sync="
+                                                            item[
+                                                                lesson.value
+                                                            ] &&
+                                                                item[
+                                                                    lesson.value
+                                                                ].marks
+                                                        "
+                                                        :onClick="changeTable"
+                                                        :disabled="
+                                                            item[
+                                                                lesson.value
+                                                            ] &&
+                                                                !item[
+                                                                    lesson.value
+                                                                ].attendance
+                                                        "
+                                                    />
+                                                </td>
+                                                <td>
+                                                    {{ item.totalAttendance }}
+                                                </td>
+                                                <td>
+                                                    {{ item.averageMark }}
+                                                </td>
+                                            </tr>
                                         </template>
                                     </v-data-table>
                                 </v-card-text>
@@ -184,9 +165,77 @@
                                         :disabled="!isStudentsTableHasChanges"
                                         @click="sendLessonResults()"
                                     >
-                                        Отправить результаты
+                                        Сохранить результаты
                                     </v-btn>
                                 </v-card-actions>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card flat>
+                                <v-card-text class="tab-content-card">
+                                    <v-text-field
+                                        v-model="sessionStatementTableSearch"
+                                        append-icon="mdi-account-search"
+                                        label="Поиск"
+                                        single-line
+                                        hide-details
+                                    ></v-text-field>
+                                    <v-data-table
+                                        @input="changeTable()"
+                                        :headers="sessionStatementTableHeaders"
+                                        :items="sessionStatementTableData"
+                                        :search="sessionStatementTableSearch"
+                                        item-key="id"
+                                        no-data-text="Ничего не найдено"
+                                        no-results-text="Ничего не найдено"
+                                        :items-per-page="itemsPerPage"
+                                    >
+                                        <template
+                                            v-slot:item.studentName="{ item }"
+                                        >
+                                            <StudentAvatar
+                                                :studentName="item.studentName"
+                                                :studentAvatar="
+                                                    item.studentAvatar
+                                                "
+                                            />
+                                        </template>
+                                    </v-data-table>
+                                </v-card-text>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card flat>
+                                <v-card-text class="tab-content-card">
+                                    <v-text-field
+                                        v-model="allLessonsTableSearch"
+                                        append-icon="mdi-account-search"
+                                        label="Поиск"
+                                        single-line
+                                        hide-details
+                                    ></v-text-field>
+                                    <v-data-table
+                                        @input="changeTable()"
+                                        :headers="allLessonsTableHeaders"
+                                        :items="allLessonsTableData"
+                                        :search="allLessonsTableSearch"
+                                        item-key="id"
+                                        no-data-text="Ничего не найдено"
+                                        no-results-text="Ничего не найдено"
+                                        :items-per-page="itemsPerPage"
+                                    >
+                                        <template
+                                            v-slot:item.studentName="{ item }"
+                                        >
+                                            <StudentAvatar
+                                                :studentName="item.studentName"
+                                                :studentAvatar="
+                                                    item.studentAvatar
+                                                "
+                                            />
+                                        </template>
+                                    </v-data-table>
+                                </v-card-text>
                             </v-card>
                         </v-tab-item>
                     </v-tabs-items>
@@ -206,6 +255,7 @@
 import statusEnum from "@/assets/js/enums/statusEnum.js";
 import markEnum from "@/assets/js/enums/markEnum.js";
 import StudentAvatar from "@/components/shared/StudentAvatar.vue";
+import TheMarkPicker from "@/components/TheMarkPicker";
 
 export default {
     data() {
@@ -220,161 +270,482 @@ export default {
             homeWorkFieldDisabled: true,
             studentsTableSearch: "",
             isStudentsTableHasChanges: false,
-            studentsTableHeaders: [
+            currentStatementTableSearch: "",
+            sessionStatementTableSearch: "",
+            allLessonsTableSearch: "",
+            currentStatementLessons: [
+                {
+                    id: 0,
+                    text: "17 февраля 2020, 17:00 - 18:35",
+                    value: "lesson1",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    id: 1,
+                    text: "18 февраля 2020, 17:00 - 18:35",
+                    value: "lesson2",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    id: 2,
+                    text: "19 февраля 2020, 17:00 - 18:35",
+                    value: "lesson3",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    id: 3,
+                    text: "21 февраля 2020, 17:00 - 18:35",
+                    value: "lesson4",
+                    sortable: false,
+                    filterable: false
+                }
+            ],
+            currentStatementTableHeaders: [
+                // currentStatementLessons in the middle
                 {
                     text: "Студент",
                     align: "left",
                     value: "studentName"
                 },
-                { text: "Институт", value: "institute", sortable: false },
-                { text: "Группа", value: "groop", sortable: false },
                 {
-                    text: "Цифровой след",
-                    value: "cyberTrack",
+                    text: "17 февраля 2020, 17:00 - 18:35",
+                    value: "lesson1",
                     sortable: false,
                     filterable: false
                 },
                 {
-                    text: "Оценки",
-                    value: "marks",
+                    text: "18 февраля 2020, 17:00 - 18:35",
+                    value: "lesson2",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "19 февраля 2020, 17:00 - 18:35",
+                    value: "lesson3",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "21 февраля 2020, 17:00 - 18:35",
+                    value: "lesson4",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "Посещаемость",
+                    value: "totalAttendance",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "Итоговая оценка",
+                    value: "averageMark",
                     align: "center",
                     sortable: false,
                     filterable: false
                 }
             ],
-            studentsTableData: [
+            currentStatementTableData: [
                 {
                     id: 1,
                     studentName: "Иванов И.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                    institute: "ИМИТ",
-                    groop: 6,
-                    cyberTrack: "+ 2 файла",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    },
+                    totalAttendance: 18,
+                    averageMark: 4
                 },
                 {
                     id: 2,
                     studentName: "Борисов О.И.",
                     studentAvatar: "",
-                    institute: "ИМИТ",
-                    groop: 9,
-                    cyberTrack: "+ 1 файла",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    },
+                    totalAttendance: 18,
+                    averageMark: 4
                 },
                 {
                     id: 3,
                     studentName: "Петрова И.Д.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-                    institute: "ИМИТ",
-                    groop: 16,
-                    cyberTrack: "+ 3 файла",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    },
+                    totalAttendance: 17,
+                    averageMark: 1
                 },
                 {
                     id: 4,
                     studentName: "Сидоров К.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                    institute: "ИМИТ",
-                    groop: 3,
-                    cyberTrack: "",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    },
+                    totalAttendance: 18,
+                    averageMark: 4
                 },
                 {
                     id: 5,
                     studentName: "Круг Ш.О.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-                    institute: "ИМИТ",
-                    groop: 16,
-                    cyberTrack: "",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    },
+                    totalAttendance: 18,
+                    averageMark: 4
                 },
                 {
                     id: 6,
                     studentName: "Квадрат Т.Т.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-                    institute: 375,
-                    groop: 0.0,
-                    cyberTrack: "+ 2 файла",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    }
                 },
                 {
                     id: 6,
                     studentName: "Сажин Ф.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                    institute: 392,
-                    groop: 0.2,
-                    cyberTrack: "",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    }
                 },
                 {
                     id: 7,
                     studentName: "Пажин С.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                    institute: 408,
-                    groop: 3.2,
-                    cyberTrack: "",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    }
                 },
                 {
                     id: 8,
                     studentName: "Важин В.И.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                    institute: 452,
-                    groop: 25.0,
-                    cyberTrack: "+ 2 файла",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    }
                 },
                 {
                     id: 9,
                     studentName: "Квадро И.В.",
                     studentAvatar:
                         "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                    institute: 518,
-                    groop: 26.0,
-                    cyberTrack: "",
-                    marks: []
+                    lesson1: {
+                        marks: [5, 4, 3, 2],
+                        attendance: true
+                    },
+                    lesson2: {
+                        marks: [5, 4, 3],
+                        attendance: true
+                    },
+                    lesson3: {
+                        marks: [5],
+                        attendance: true
+                    },
+                    lesson4: {
+                        marks: [4],
+                        attendance: true
+                    }
                 }
             ],
-            studentsTableSelected: []
+            sessionStatementTableHeaders: [
+                {
+                    text: "Студент",
+                    align: "left",
+                    value: "studentName"
+                },
+                {
+                    text: "Посещаемость",
+                    value: "attendance",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "Средняя оценка",
+                    value: "averageMark",
+                    align: "center",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "Итоговая оценка",
+                    value: "totalMark",
+                    align: "center",
+                    sortable: false,
+                    filterable: false
+                }
+            ],
+            sessionStatementTableData: [
+                {
+                    id: 1,
+                    studentName: "Иванов И.И.",
+                    studentAvatar:
+                        "https://cdn.vuetifyjs.com/images/lists/1.jpg",
+                    attendance: 2,
+                    averageMark: 2,
+                    totalMark: 3
+                },
+                {
+                    id: 2,
+                    studentName: "Борисов О.И.",
+                    studentAvatar: "",
+                    attendance: 5,
+                    averageMark: 5,
+                    totalMark: 5
+                },
+                {
+                    id: 3,
+                    studentName: "Петрова И.Д.",
+                    studentAvatar:
+                        "https://cdn.vuetifyjs.com/images/lists/3.jpg",
+                    attendance: 3,
+                    averageMark: 3,
+                    totalMark: 5
+                },
+                {
+                    id: 4,
+                    studentName: "Сидоров К.И.",
+                    studentAvatar:
+                        "https://cdn.vuetifyjs.com/images/lists/1.jpg",
+                    attendance: 4,
+                    averageMark: 4,
+                    totalMark: 5
+                },
+                {
+                    id: 5,
+                    studentName: "Круг Ш.О.",
+                    studentAvatar:
+                        "https://cdn.vuetifyjs.com/images/lists/4.jpg",
+                    attendance: 4,
+                    averageMark: 4,
+                    totalMark: 5
+                },
+                {
+                    id: 6,
+                    studentName: "Квадрат Т.Т.",
+                    studentAvatar:
+                        "https://cdn.vuetifyjs.com/images/lists/5.jpg",
+                    attendance: 4,
+                    averageMark: 4,
+                    totalMark: 5
+                }
+            ],
+            allLessonsTableHeaders: [
+                {
+                    text: "Урок",
+                    align: "left",
+                    value: "lesson"
+                },
+                {
+                    text: "Средняя посещаемось",
+                    value: "averageAttendance",
+                    align: "center",
+                    sortable: false,
+                    filterable: false
+                },
+                {
+                    text: "Средняя оценка",
+                    value: "averageMark",
+                    align: "center",
+                    sortable: false,
+                    filterable: false
+                }
+            ],
+            allLessonsTableData: [
+                {
+                    id: 1,
+                    lesson: "18.02.2020 18:15 - 19:35",
+                    averageAttendance: 2,
+                    averageMark: 3
+                },
+                {
+                    id: 2,
+                    lesson: "19.02.2020 18:15 - 19:35",
+                    averageAttendance: 2,
+                    averageMark: 3
+                },
+                {
+                    id: 3,
+                    lesson: "20.02.2020 18:15 - 19:35",
+                    averageAttendance: 2,
+                    averageMark: 3
+                },
+                {
+                    id: 4,
+                    lesson: "21.02.2020 18:15 - 19:35",
+                    averageAttendance: 2,
+                    averageMark: 3
+                },
+                {
+                    id: 5,
+                    lesson: "22.02.2020 18:15 - 19:35",
+                    averageAttendance: 2,
+                    averageMark: 3
+                }
+            ]
         };
     },
     components: {
-        StudentAvatar
+        StudentAvatar,
+        TheMarkPicker
     },
     mounted() {
         this.getCurrentDisciplineData(this.$route.params.id);
     },
-    computed: {},
+    computed: {
+        currentStatementDataIndex() {
+            desserts
+                .map(function(x) {
+                    return x.id;
+                })
+                .indexOf(item.id);
+        }
+    },
     methods: {
         getCurrentDisciplineData(id) {
             let promise = new Promise((res, rej) => {
                 setTimeout(() => {
                     this.discipline = {
                         id: 1,
-                        number: 1,
                         title: "Теория игр",
                         controlForm: "Экзамен",
-                        themes: "Теория игр и экономическое моделирование",
-                        homeWork:
-                            "1. Сделать задание из прикреплённого файла\n2. Сравнить с расчётами",
-                        files: ["file1.pdf", "расчеты.pdf"],
                         types: ["Лекция", "Практика"],
-                        date: new Date(2020, 1, 9),
+                        totalLessonsCount: 30,
                         existingPeriod: {
                             start: new Date(2020, 1, 9),
                             end: new Date(2020, 6, 9)
-                        },
-                        status: 0,
-                        cabinet: "102",
-                        corps: "ГК"
+                        }
                     };
                     res("ok");
                 }, 100);
