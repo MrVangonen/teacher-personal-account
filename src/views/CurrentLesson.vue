@@ -126,7 +126,7 @@
                                             />
                                         </template>
                                         <template v-slot:item.marks="{ item }">
-                                            <TheMarkPicker
+                                            <MarkPicker
                                                 :marks.sync="item.marks"
                                                 :onClick="changeTable"
                                                 :disabled="!item.isSelected"
@@ -292,7 +292,7 @@
 import statusEnum from "@/assets/js/enums/statusEnum.js";
 import fileFormatEnum from "@/assets/js/enums/fileFormatEnum.js";
 import StudentAvatar from "@/components/shared/StudentAvatar";
-import TheMarkPicker from "@/components/TheMarkPicker";
+import MarkPicker from "@/components/shared/MarkPicker";
 
 export default {
     data() {
@@ -445,7 +445,7 @@ export default {
     },
     components: {
         StudentAvatar,
-        TheMarkPicker
+        MarkPicker
     },
     created() {
         this.getCurrentLessonData(this.$route.params.id);

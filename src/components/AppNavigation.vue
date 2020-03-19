@@ -86,7 +86,7 @@ export default {
                     link: ""
                 },
                 {
-                    icon: "mdi-settings",
+                    icon: "mdi-wrench",
                     text: "Настройки",
                     link: ""
                 }
