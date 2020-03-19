@@ -1,4 +1,4 @@
-# vuetify-test
+# Teacher Personal Account
 
 ## Project setup
 ```
