@@ -1,17 +1,6 @@
 <template>
     <div>
         <div class="o-grid align-baseline justify-space-between">
-            <div class="col size-12 sm:size-5 md:size-4 mb-4">
-                <v-select
-                    v-model="currentYear"
-                    :items="years"
-                    background-color="secondary lighten-3"
-                    outlined
-                    color="primary"
-                    dense
-                    label="Учебный год"
-                ></v-select>
-            </div>
             <div class="mt-2">
                 <v-text-field
                     v-model="disciplinesTableSearch"
@@ -169,7 +158,6 @@ export default {
     },
     methods: {
         goToChoosenDiscipline(discipline) {
-          debugger
             this.$router.push({
                 path: `disciplines/${discipline.id}`
             });
@@ -178,4 +166,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss">
+
+</style>
