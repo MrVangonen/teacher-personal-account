@@ -35,6 +35,7 @@ export default {
         currentYear: 0,
         years: Array,
         studentsTableSearch: "",
+        itemsPerPage: 5,
         studentsTableHeaders: [
             {
                 text: "Студент",

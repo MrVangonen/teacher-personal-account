@@ -191,6 +191,15 @@
                         >mdi-timelapse</v-icon
                       >
                     </template>
+                    <template v-slot:item.averageAttendance="{ item }">
+                          <v-progress-linear
+                            color="light-blue"
+                            height="10"
+                            buffer-value="30"
+                            :value="item.averageAttendance"
+                            striped
+                          ></v-progress-linear>
+                    </template>
                   </v-data-table>
                 </v-card-text>
               </v-card>
@@ -616,7 +625,7 @@ export default {
         {
           text: "Средняя посещаемось",
           value: "averageAttendance",
-          align: "center",
+          align: "left",
           sortable: false,
           filterable: false
         },
@@ -731,7 +740,7 @@ export default {
 }
 
 .progress-container {
-  min-height: 100vh;
+  min-height: 700px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -742,7 +751,7 @@ export default {
 }
 
 .tab-content-card {
-  min-height: 100vh;
+  min-height: 700px;
 }
 
 .discipline-type {

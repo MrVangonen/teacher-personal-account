@@ -71,4 +71,14 @@ export default {
 .container_full-height {
     min-height: 100vh;
 }
+
+//data-table default style fix
+.v-data-table__wrapper tbody tr {
+  // custom vuetify дата-table, с ховером
+  height: 100px;
+
+  &:hover {
+    background-color: var(--v-lightning-base) !important;
+  }
+}
 </style>

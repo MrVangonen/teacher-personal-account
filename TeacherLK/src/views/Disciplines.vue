@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="o-grid align-baseline justify-space-between">
+        <div>
             <div class="mt-2">
                 <v-text-field
                     v-model="disciplinesTableSearch"
@@ -10,6 +10,7 @@
                     hide-details
                 ></v-text-field>
                 <v-data-table
+                    style="cursor: pointer;"
                     @input="changeTable()"
                     :headers="disciplinesTableHeaders"
                     :items="disciplinesTableData"

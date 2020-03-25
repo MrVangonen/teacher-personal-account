@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "TeacherLK"
+		}
+	],
+	"settings": {
+		"editor.tabSize": 2,
+		"html.format.wrapAttributes": "force-expand-multiline",
+		"files.associations": {
+			"*.cshtml": "html"
+		},
+		"files.encoding": "utf8bom",
+		"files.eol": "\r\n",
+		"javascript.preferences.quoteStyle": "single"
+	}
+}
