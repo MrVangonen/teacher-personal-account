@@ -65,7 +65,7 @@
                   ></v-text-field>
                   <v-data-table
                     :headers="studentsTableHeaders"
-                    :items="indexedStudentsTableData"
+                    :items="studentsTableData"
                     :search="studentsTableSearch"
                     item-key="id"
                     no-data-text="Ничего не найдено"
@@ -76,8 +76,7 @@
                     <template v-slot:item.isSelected="{ item }">
                       <v-checkbox
                         v-model="item.isSelected"
-                        @input=" changeSelectedItemState(item)"
-                        @change="changeTable()"
+                        @change="changeTable(); item.marks=[]"
                       ></v-checkbox>
                     </template>
                     <template v-slot:item.studentName="{ item }">
@@ -410,6 +409,7 @@ export default {
         : false;
     },
     changeSelectedItemState(item) {
+      debugger
       item.isSelected = !item.isSelected;
       item.marks = [];
     },

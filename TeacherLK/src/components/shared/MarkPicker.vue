@@ -68,8 +68,7 @@ export default {
       },
       set(value) {
         this.marks.push(value);
-        this.$emit("update:marks", value);
-        return value;
+        return this.marks;
       }
     }
   },
