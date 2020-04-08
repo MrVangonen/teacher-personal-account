@@ -463,13 +463,6 @@ export default {
   color: black;
 }
 
-.progress-container {
-  min-height: 700px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .status-btn {
   min-width: 195px;
 }

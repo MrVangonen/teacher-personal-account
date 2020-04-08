@@ -81,4 +81,11 @@ export default {
     background-color: var(--v-lightning-base) !important;
   }
 }
+
+.progress-container {
+  min-height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>

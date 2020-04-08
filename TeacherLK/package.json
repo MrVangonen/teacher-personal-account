@@ -8,6 +8,8 @@
     "mu": "node-sass ./src/scss/utils/_mu.scss -o ./src/scss/utils/"
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "moment": "^2.24.0",
     "mu-utils": "^1.0.6",
     "node-sass": "^4.13.1",
     "vue": "^2.6.10",
