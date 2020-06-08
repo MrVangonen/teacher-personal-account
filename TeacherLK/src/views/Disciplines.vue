@@ -27,6 +27,15 @@
                             :studentAvatar="item.studentAvatar"
                         />
                     </template>
+                    <template v-slot:item.averageAttendance="{ item }">
+                          <v-progress-linear
+                            color="light-blue"
+                            height="10"
+                            buffer-value="100"
+                            :value="item.averageAttendance"
+                            striped
+                          ></v-progress-linear>
+                    </template>
                 </v-data-table>
             </div>
         </div>
@@ -92,7 +101,7 @@ export default {
                 faculty: "ИМИТ",
                 direction: "ИСИТ",
                 lessonsHours: "Практика (20), Лекция (80)",
-                averageAttendance: 20
+                averageAttendance: 55
             },
             {
                 id: 2,
@@ -102,7 +111,7 @@ export default {
                 faculty: "ИМИТ",
                 direction: "ИСИТ",
                 lessonsHours: "Практика (20), Лекция (80)",
-                averageAttendance: 20
+                averageAttendance: 80
             },
             {
                 id: 3,
@@ -112,7 +121,7 @@ export default {
                 faculty: "ИМИТ",
                 direction: "ИСИТ",
                 lessonsHours: "Практика (20), Лекция (80)",
-                averageAttendance: 20
+                averageAttendance: 90
             },
             {
                 id: 4,
@@ -122,7 +131,7 @@ export default {
                 faculty: "ИМИТ",
                 direction: "ИСИТ",
                 lessonsHours: "Практика (20), Лекция (80)",
-                averageAttendance: 20
+                averageAttendance: 100
             },
             {
                 id: 5,
@@ -132,7 +141,7 @@ export default {
                 faculty: "ИМИТ",
                 direction: "ИСИТ",
                 lessonsHours: "Практика (20), Лекция (80)",
-                averageAttendance: 20
+                averageAttendance: 40
             }
         ]
     }),

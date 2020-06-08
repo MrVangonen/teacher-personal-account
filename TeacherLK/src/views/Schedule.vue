@@ -165,7 +165,6 @@ export default {
   },
   methods: {
     fetchData() {
-      
       if (!this.$route.query.teacher_id || !this.$route.query.date) {
         this.$router.push({
           query: { teacher_id: this.teacherId, date: "25.03.2020" }

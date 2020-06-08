@@ -96,39 +96,55 @@ export default {
                 learningForm: "очная",
                 recruitment: 2016,
                 averageAttendance: 4,
-                workPlanDisciplines: "Теория игр, Ин яз"
+                workPlanDisciplines: "Администрирование"
             },
             {
                 id: 2,
                 studentName: "Борисов О.И.",
                 studentAvatar: "",
-                attendance: 5,
-                averageMark: 5,
-                totalMark: 5
+                groop: 22301,
+                institut: "ИСИТ",
+                direction: "ИМИТ",
+                learningForm: "очная",
+                recruitment: 2017,
+                averageAttendance: 4,
+                workPlanDisciplines: "Микроэлектроника"
             },
             {
                 id: 3,
                 studentName: "Петрова И.Д.",
                 studentAvatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-                attendance: 3,
-                averageMark: 3,
-                totalMark: 5
+                groop: 22504,
+                institut: "ИСИТ",
+                direction: "ИМИТ",
+                learningForm: "заочная",
+                recruitment: 2015,
+                averageAttendance: 4,
+                workPlanDisciplines: "Теория игр"
             },
             {
                 id: 4,
                 studentName: "Сидоров К.И.",
                 studentAvatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                attendance: 4,
-                averageMark: 4,
-                totalMark: 5
+                groop: 22203,
+                institut: "ИСИТ",
+                direction: "ИМИТ",
+                learningForm: "заочная",
+                recruitment: 2015,
+                averageAttendance: 4,
+                workPlanDisciplines: "Теория игр"
             },
             {
                 id: 5,
                 studentName: "Круг Ш.О.",
                 studentAvatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-                attendance: 4,
-                averageMark: 4,
-                totalMark: 5
+                groop: 22505,
+                institut: "ИСИТ",
+                direction: "ИМИТ",
+                learningForm: "заочная",
+                recruitment: 2015,
+                averageAttendance: 3,
+                workPlanDisciplines: "Теория игр"
             }
         ]
     }),

@@ -61,9 +61,9 @@
               <v-tab class="font-weight-bold">
                 Текущая ведомость
               </v-tab>
-              <v-tab class="font-weight-bold">
+              <!-- <v-tab class="font-weight-bold">
                 Ведомость сессии
-              </v-tab>
+              </v-tab> -->
               <v-tab class="font-weight-bold">
                 Все занятия
               </v-tab>
@@ -134,7 +134,7 @@
                 </v-card-actions>
               </v-card>
             </v-tab-item>
-            <v-tab-item>
+            <!-- <v-tab-item>
               <v-card flat>
                 <v-card-text class="tab-content-card">
                   <v-text-field
@@ -163,7 +163,7 @@
                   </v-data-table>
                 </v-card-text>
               </v-card>
-            </v-tab-item>
+            </v-tab-item> -->
             <v-tab-item>
               <v-card flat>
                 <v-card-text class="tab-content-card">

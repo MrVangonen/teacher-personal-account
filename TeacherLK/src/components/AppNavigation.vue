@@ -15,6 +15,7 @@
                 </v-list-item>
                 <v-list-group
                     v-if="isMobile || !navOptions.isNavButtonDesktopClicked"
+                    disabled
                 >
                     <template v-slot:activator>
                         <v-list-item-content>

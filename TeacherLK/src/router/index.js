@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Schedule from "../views/Schedule.vue";
+import Start from "../views/Start.vue";
 const CurrentLesson = () =>  Promise.resolve(import("../views/CurrentLesson.vue"));
 const CurrentDiscipline = () =>  Promise.resolve(import("../views/CurrentDiscipline.vue"));
 const TimeTable = () =>  Promise.resolve(import("../views/TimeTable.vue"));
@@ -13,7 +14,7 @@ Vue.use(VueRouter);
 const routes = [
     {
         path: "/",
-        redirect: "/schedule"
+        redirect: "/login"
     },
     {
         path: "/schedule",
@@ -24,11 +25,19 @@ const routes = [
         }
     },
     {
+      path: "/login",
+      name: "login",
+      component: Start,
+      meta: {
+          rusRoute: "Login"
+      }
+    },
+    {
         path: "/schedule/lessons/:id",
         name: "schedule",
         component: CurrentLesson,
         meta: {
-            rusRoute: "/ Расписание / Занятие"
+            rusRoute: "/ Расписание / Теория игр"
         }
     },
     {
@@ -52,7 +61,7 @@ const routes = [
         name: "discipline",
         component: CurrentDiscipline,
         meta: {
-            rusRoute: "/ Расписание / Дисциплина"
+            rusRoute: "/ Дисциплины / Теория игр"
         }
     },
     {
