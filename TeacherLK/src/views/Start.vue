@@ -1,6 +1,6 @@
 ﻿<template>
-  <div class="background-wrapper">
-    <div class="registration-wrapper container" ref="start">
+  <div v-cloak class="background-wrapper">
+    <section class="start-section container" ref="start">
       <div class="logo">
         <img height="82px" class="mr-4" :src="require('@/assets/img/logo.png')" alt />
         <span class="text-sm font-weight-bold display-1">
@@ -10,19 +10,37 @@
         </span>
       </div>
       <div class="toolkit">
-        <v-menu v-model="isColorPickerMenuOpen" top offset-y :close-on-content-click="false">
+        <v-menu v-model="isPenColorOpen" top offset-y :close-on-content-click="false">
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" color="blue darken-2" dark fab>
+            <v-btn v-on="on" color="blue darken-2" class="color-btn" dark fab>
               <v-icon>mdi-format-color-fill</v-icon>
+              <div v-show="isCanvasImgSaved" class="badge"></div>
             </v-btn>
           </template>
           <v-color-picker v-model="penColor" class="ma-2" hide-inputs></v-color-picker>
         </v-menu>
+        <v-menu v-model="isPenThicknessOpen" top offset-y :close-on-content-click="false">
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" color="blue darken-2" class="thikness-btn ml-2" dark fab>
+              <v-icon>mdi-pen</v-icon>
+            </v-btn>
+          </template>
+          <div class="slidecontainer">
+            <input
+              v-model="penThickness"
+              style="width: 200px"
+              type="range"
+              min="1"
+              max="50"
+              class="slider"
+            />
+          </div>
+        </v-menu>
         <transition name="slide-fade">
           <v-btn
-            v-show="!isCanvasImgInserted"
+            v-show="!isCanvasImgSaved"
             @click="saveCanvasImgToLocalStorage()"
-            class="clearCanvas ml-2"
+            class="save-btn ml-2"
             color="blue darken-2"
             dark
             fab
@@ -30,34 +48,34 @@
             <v-icon>mdi-clippy</v-icon>
           </v-btn>
         </transition>
-        <v-badge bordered color="error" icon="mdi-lock" overlap>
-          <v-btn class="white--text" color="error" depressed>Lock Account</v-btn>
-        </v-badge>
         <transition name="slide-fade">
           <v-btn
             v-show="!isCanvasClean"
             @click="clearCanvas()"
-            class="clearCanvas ml-2"
-            color="blue darken-2"
+            class="ml-2"
+            color="clear-btn blue darken-2"
             dark
             fab
           >
-            <v-icon>mdi-clippy</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
         </transition>
       </div>
-      <div class="form" ref="form">
-        <v-form class="form__content" ref="form" v-model="valid" :lazy-validation="lazy">
-          <div>
-            <h2 class="mb-2">Вход</h2>
-            <span class="d-block mb-8">Введите логин и пароль</span>
-          </div>
+      <div class="form">
+        <v-form
+          v-if="!isRegistrationForm"
+          class="form__content"
+          v-model="isLoginFormValid"
+          :lazy-validation="lazy"
+        >
+          <h2 class="mb-2">Вход</h2>
+          <span class="d-block mb-8">Введите логин и пароль</span>
           <v-text-field
             v-model="login"
             class="mb-6"
             :counter="10"
             :rules="loginRules"
-            label="Имя пользователя"
+            label="Логин"
             outlined
             dense
             required
@@ -65,7 +83,7 @@
           <v-text-field
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             :type="showPassword ? 'text' : 'password'"
-            class="mb-6"
+            class="mb-4"
             v-model="password"
             :rules="passwordRules"
             label="Пароль"
@@ -75,20 +93,98 @@
             @click:append="showPassword = !showPassword"
             required
           ></v-text-field>
-          <v-checkbox v-model="checkbox" label="Запомнить меня"></v-checkbox>
+          <v-checkbox v-model="rememberMeCheckbox" label="Запомнить меня"></v-checkbox>
           <v-btn
-            class="mt-12"
-            :disabled="!valid"
+            class="mt-8"
+            :disabled="!isLoginFormValid"
             color="success"
             elevation="2"
             block
             large
             @click="validate"
           >Войти</v-btn>
+          <v-btn
+            class="mt-4"
+            color
+            elevation="2"
+            block
+            large
+            @click="isRegistrationForm = true"
+          >Зарегестрироваться</v-btn>
+        </v-form>
+        <v-form
+          v-else
+          class="form__content registration"
+          v-model="isRegistrationFormValid"
+          :lazy-validation="lazy"
+        >
+          <h2 class="mb-2">Регистрация</h2>
+          <span class="d-block mb-8">Быстро и просто</span>
+          <v-text-field
+            v-model="name"
+            class="mb-6"
+            :counter="10"
+            :rules="nameRules"
+            label="Имя"
+            placeholder="Иван"
+            outlined
+            dense
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="newLogin"
+            class="mb-6"
+            :counter="10"
+            :rules="loginRules"
+            label="Новый логин"
+            placeholder="Ivan13001"
+            outlined
+            dense
+            required
+          ></v-text-field>
+          <v-text-field
+            class="mb-6"
+            v-model="newPassword"
+            :rules="passwordRules"
+            label="Новый пароль"
+            placeholder="password109009"
+            outlined
+            dense
+            required
+          ></v-text-field>
+          <input
+            type="date"
+            class="date-of-birth"
+            v-model="dateOfBirth"
+            min="1900-01-01"
+            max="2100-12-31"
+          />
+          <v-checkbox
+            v-model="termsOfUserCheckbox"
+            label="Я ознакомился с правилами, политикой конфиденциальности и принимаю их условия."
+          ></v-checkbox>
+          <v-btn
+            class="mt-8"
+            :disabled="!isRegistrationFormValid"
+            color="success"
+            elevation="2"
+            block
+            large
+            @click="validate"
+          >Зарегестрироваться</v-btn>
+          <v-btn
+            class="mt-4"
+            color
+            elevation="2"
+            block
+            large
+            @click="isRegistrationForm = false"
+          >Войти</v-btn>
         </v-form>
         <div class="white-box"></div>
+        <div class="rainbow" :class="{'none-animation': isRegistrationForm}"></div>
       </div>
-    </div>
+    </section>
     <canvas
       id="canvas"
       ref="canvas"
@@ -112,36 +208,50 @@ const BACKSPACE = 8;
 export default {
   data() {
     return {
-      isCanvasImgInserted: false,
+      isRegistrationForm: true,
+      isCanvasImgSaved: true,
+      isCanvasClean: true,
       snackbar: false,
       snackbarText: "",
-      isColorPickerMenuOpen: false,
-      isCanvasClean: true,
+      isPenColorOpen: false,
+      isPenThicknessOpen: false,
       penColor: "#000000",
+      penThickness: 3,
       vueCanvas: {},
-      valid: true,
+      isLoginFormValid: true,
+      isRegistrationFormValid: true,
       showPassword: false,
       login: "",
-      loginRules: [
-        v => !!v || "Login is required",
-        v => (v && v.length <= 30) || "Login must be less than 30 characters"
-      ],
       password: "",
-      passwordRules: [v => !!v || "Password is required"],
-      checkbox: true,
+      rememberMeCheckbox: true,
+      name: "",
+      newLogin: "",
+      newPassword: "",
+      dateOfBirth: "1980-07-22",
+      termsOfUserCheckbox: true,
+      loginRules: [
+        v => !!v || "Введите логин",
+        v => (v && v.length <= 30) || "Логин не должен превышать 30 символов"
+      ],
+      nameRules: [
+        v => !!v || "Введите имя",
+        v => (v && v.length <= 30) || "Имя не должен превышать 30 символов"
+      ],
+      passwordRules: [
+        v => !!v || "Введите пароль",
+        v => (v && v.length <= 30) || "Пароль не должен превышать 30 символов"
+      ],
       lazy: true
     };
   },
   mounted() {
     let canvas = document.getElementById("canvas");
-    let ctx = canvas.getContext("2d");
-    this.vueCanvas = ctx;
+    this.vueCanvas = canvas.getContext("2d");
+
     this.resize();
     this.loadCanvasImgFromLocaleStorage();
   },
-  created() {
-    document.addEventListener("keydown", this.onDeletePressed);
-  },
+  created() {},
   methods: {
     resize() {
       this.vueCanvas.canvas.width = window.innerWidth;
@@ -159,14 +269,12 @@ export default {
 
         return function onImgLoaded() {
           currentContext.vueCanvas.drawImage(img, 0, 0);
-          currentContext.isCanvasClean = false;
-          currentContext.isCanvasImgInserted = true;
         };
       }
     },
     clearCanvas() {
       this.vueCanvas.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      this.isCanvasImgInserted = true;
+      this.isCanvasImgSaved = true;
       this.isCanvasClean = true;
 
       localStorage.removeItem("canvasImg");
@@ -185,16 +293,16 @@ export default {
       console.log("login");
     },
     drawPath(e) {
-      if (e.buttons !== 1 || this.isColorPickerMenuOpen) {
+      if (e.buttons !== 1 || this.isPenColorOpen || this.isPenThicknessOpen) {
         this.$refs["canvas"].style.cursor = "default";
         return; // if mouse is not clicked, do not go further
       }
       this.$refs["canvas"].style.cursor = "crosshair";
 
-      this.isCanvasImgInserted = false;
+      this.isCanvasImgSaved = false;
       this.isCanvasClean = false;
       this.vueCanvas.beginPath();
-      this.vueCanvas.lineWidth = 3; // width of line
+      this.vueCanvas.lineWidth = this.penThickness; // width of line
       this.vueCanvas.lineCap = "round"; // rounded end cap
       this.vueCanvas.strokeStyle = this.penColor;
 
@@ -209,7 +317,8 @@ export default {
       pos.y = e.offsetY;
     },
     saveCanvasImgToLocalStorage() {
-      this.isCanvasImgInserted = true;
+      this.isCanvasImgSaved = true;
+      this.isCanvasClean = true;
 
       localStorage.setItem("canvasImg", canvas.toDataURL());
       this.showSnackBar("Холст сохранен");
@@ -219,6 +328,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+[v-cloak] {
+  display: none;
+}
+$additional-gap: 20px;
+
 .background-wrapper {
   width: 100%;
   height: 100%;
@@ -227,7 +341,7 @@ export default {
   background-size: cover;
 }
 
-.registration-wrapper {
+.start-section {
   width: 100%;
   height: 100%;
   display: flex;
@@ -245,27 +359,19 @@ export default {
     height: fit-content;
     flex-wrap: wrap-reverse;
 
-    & > * {
-      margin-top: 20px;
+    & * {
+      margin-top: $additional-gap;
     }
   }
 
   .form {
-    margin-top: 20px;
+    margin-top: $additional-gap;
     position: relative;
     min-width: 320px;
     height: fit-content;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 6px;
-    background-image: linear-gradient(
-      115deg,
-      #4fcf70,
-      #fad648,
-      #a767e5,
-      #12bcfe,
-      #44ce7b
-    );
-    animation: rainbow-animation 5s ease-in-out;
+    overflow: hidden;
     z-index: 1;
 
     &:hover {
@@ -274,18 +380,63 @@ export default {
 
     &__content {
       position: relative;
-      z-index: 1;
+      z-index: 3;
       padding: 34px 36px;
+
+      &.login {
+      }
+
+      &.registration {
+        max-width: 500px;
+
+        .date-of-birth {
+          width: 100%;
+          outline: 0;
+          padding: 6px 10px;
+          color: rgba(0, 0, 0, 0.24);
+          border: 1px solid rgba(0, 0, 0, 0.24);
+          border-radius: 6px;
+
+          &:focus {
+            color: #000;
+            border: 1px solid var(--v-primary-base);
+          }
+        }
+      }
     }
 
-    & .white-box {
+    .white-box {
       width: calc(100% - 10px);
       height: calc(100% - 10px);
       position: absolute;
       top: 5px;
       left: 5px;
-      background-color: white;
+      background: white;
       border-radius: 6px;
+      z-index: 2;
+    }
+
+    .rainbow {
+      position: absolute;
+      width: 1000px;
+      height: 1000px;
+      left: -75%;
+      top: -20%;
+      background-image: linear-gradient(
+        115deg,
+        #4fcf70,
+        #fad648,
+        #a767e5,
+        #12bcfe,
+        #44ce7b
+      );
+      animation: rotate-animation 15s ease-in-out infinite;
+      transform: rotate(0deg);
+      z-index: 1;
+    }
+
+    .none-animation {
+      animation: none;
     }
   }
 
@@ -295,6 +446,72 @@ export default {
     width: fit-content;
     position: absolute;
     bottom: 40px;
+
+    .save-btn,
+    .clear-btn,
+    .color-btn,
+    .thikness-btn {
+      &:hover::after {
+        background: transparent;
+        position: absolute;
+        top: -25px;
+        font-size: 10px;
+        color: black;
+        font-weight: bold;
+        z-index: 3;
+        padding: 2px;
+        border: none;
+
+        --webkit-box-shadow: none;
+        box-shadow: none;
+      }
+    }
+
+    .color-btn {
+      &:hover::after {
+        content: "Цвет";
+      }
+    }
+
+    .thikness-btn {
+      &:hover::after {
+        content: "Толщина";
+      }
+    }
+
+    .save-btn {
+      &:hover::after {
+        content: "Сохранить";
+      }
+    }
+
+    .clear-btn {
+      &:hover::after {
+        content: "Очистить";
+      }
+    }
+
+    .badge {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--v-accent-base);
+      border-radius: 50%;
+      border: 2px solid white;
+      right: -4px;
+      top: -16px;
+      z-index: 1;
+
+      &::before {
+        content: "\F012C";
+        font: normal normal normal 24px/1 "Material Design Icons";
+        font-size: 15px;
+        color: white;
+      }
+    }
   }
 }
 
@@ -311,7 +528,7 @@ export default {
 }
 
 @media (max-width: 600px) {
-  .registration-wrapper {
+  .start-section {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -330,48 +547,9 @@ export default {
   }
 }
 
-@keyframes rainbow-animation {
-  0%,
-  100% {
-    background-image: linear-gradient(
-      0deg,
-      #4fcf70,
-      #fad648,
-      #a767e5,
-      #12bcfe,
-      #44ce7b
-    );
-  }
-
-  25% {
-    background-image: linear-gradient(
-      90deg,
-      #4fcf70,
-      #fad648,
-      #a767e5,
-      #12bcfe,
-      #44ce7b
-    );
-  }
-  50% {
-    background-image: linear-gradient(
-      180deg,
-      #4fcf70,
-      #fad648,
-      #a767e5,
-      #12bcfe,
-      #44ce7b
-    );
-  }
-  75% {
-    background-image: linear-gradient(
-      270deg,
-      #4fcf70,
-      #fad648,
-      #a767e5,
-      #12bcfe,
-      #44ce7b
-    );
+@keyframes rotate-animation {
+  to {
+    transform: rotate(360deg);
   }
 }
 
