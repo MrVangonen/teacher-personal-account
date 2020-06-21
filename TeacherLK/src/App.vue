@@ -1,6 +1,6 @@
 <template>
   <v-app class="app d-flex">
-    <div v-if="login">
+    <div v-if="loggedIn">
       <AppNavigation :navOptions="navOptions" />
       <main :class="changeLeftPadding">
         <AppHeader :navOptions="navOptions" />
@@ -10,7 +10,7 @@
         <AppFooter />
       </main>
     </div>
-    <Start v-else />
+    <router-view v-else></router-view>
   </v-app>
 </template>
 
@@ -41,6 +41,9 @@ export default {
     };
   },
   computed: {
+    loggedIn() {
+      return this.$store.getters.loggedIn;
+    },
     isMobile() {
       return this.$vuetify.breakpoint.xsOnly;
     },

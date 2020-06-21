@@ -126,11 +126,11 @@ export default {
     };
   },
   created() {
-    this.fetchData();
+    // this.fetchData();
   },
   watch: {
     // при изменениях маршрута запрашиваем данные снова
-    $route: "fetchData"
+    // $route: "fetchData"
   },
   computed: {
     currentDate: {
@@ -208,7 +208,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-text-field__details {
   //fix select
   display: none !important;

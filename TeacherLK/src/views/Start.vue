@@ -67,13 +67,13 @@
           class="form__content"
           v-model="isLoginFormValid"
           :lazy-validation="lazy"
+          @submit.prevent="signIn"
         >
           <h2 class="mb-2">Вход</h2>
           <span class="d-block mb-8">Введите логин и пароль</span>
           <v-text-field
-            v-model="login"
+            v-model="username"
             class="mb-6"
-            :counter="10"
             :rules="loginRules"
             label="Логин"
             outlined
@@ -101,7 +101,7 @@
             elevation="2"
             block
             large
-            @click="validate"
+            type="submit"
           >Войти</v-btn>
           <v-btn
             class="mt-4"
@@ -117,13 +117,13 @@
           class="form__content registration"
           v-model="isRegistrationFormValid"
           :lazy-validation="lazy"
+          @submit.prevent="signUp"
         >
           <h2 class="mb-2">Регистрация</h2>
           <span class="d-block mb-8">Быстро и просто</span>
           <v-text-field
             v-model="name"
             class="mb-6"
-            :counter="10"
             :rules="nameRules"
             label="Имя"
             placeholder="Иван"
@@ -134,15 +134,17 @@
           <v-text-field
             v-model="newLogin"
             class="mb-6"
-            :counter="10"
-            :rules="loginRules"
+            :rules="newLoginRules"
             label="Новый логин"
             placeholder="Ivan13001"
+            @input="checkUsername()"
             outlined
             dense
             required
           ></v-text-field>
           <v-text-field
+            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="showPassword ? 'text' : 'password'"
             class="mb-6"
             v-model="newPassword"
             :rules="passwordRules"
@@ -150,15 +152,11 @@
             placeholder="password109009"
             outlined
             dense
+            counter
+            @click:append="showPassword = !showPassword"
             required
           ></v-text-field>
-          <input
-            type="date"
-            class="date-of-birth"
-            v-model="dateOfBirth"
-            min="1900-01-01"
-            max="2100-12-31"
-          />
+          <input type="date" class="birthday" v-model="birthday" min="1900-01-01" max="2100-12-31" />
           <v-checkbox
             v-model="termsOfUserCheckbox"
             label="Я ознакомился с правилами, политикой конфиденциальности и принимаю их условия."
@@ -168,9 +166,9 @@
             :disabled="!isRegistrationFormValid"
             color="success"
             elevation="2"
+            type="submit"
             block
             large
-            @click="validate"
           >Зарегестрироваться</v-btn>
           <v-btn
             class="mt-4"
@@ -204,12 +202,16 @@
 let pos = { x: 0, y: 0 };
 const DELETE = 46;
 const BACKSPACE = 8;
+let timeout;
+let newLoginValidationPromise = new Promise(function(req, res) {});
 
 export default {
   data() {
     return {
-      isRegistrationForm: true,
+      isNewLoginValid: true,
+      isRegistrationForm: false,
       isCanvasImgSaved: true,
+      isUserNameValid: false,
       isCanvasClean: true,
       snackbar: false,
       snackbarText: "",
@@ -221,14 +223,15 @@ export default {
       isLoginFormValid: true,
       isRegistrationFormValid: true,
       showPassword: false,
-      login: "",
+      username: "",
       password: "",
       rememberMeCheckbox: true,
-      name: "",
-      newLogin: "",
-      newPassword: "",
-      dateOfBirth: "1980-07-22",
+      name: "i",
+      newLogin: "i",
+      newPassword: "password",
+      birthday: null,
       termsOfUserCheckbox: true,
+      newLoginRules: [],
       loginRules: [
         v => !!v || "Введите логин",
         v => (v && v.length <= 30) || "Логин не должен превышать 30 символов"
@@ -251,8 +254,92 @@ export default {
     this.resize();
     this.loadCanvasImgFromLocaleStorage();
   },
-  created() {},
+  created() {
+    this.newLoginRules = [
+      v => !!v || "Введите логин",
+      v => (v && v.length <= 30) || "Логин не должен превышать 30 символов",
+      v => this.isNewLoginValidComputed || "Такой логин уже используется"
+    ];
+    // this.newLoginRules = this.loginRules.concat(async function(v) {
+    //   console.log(newLoginValidationPromise);
+    //   await newLoginValidationPromise.then(function(response){
+    //     console.log(response)
+    //     if(response) {
+    //       return "Такой логин уже существует";
+    //     }
+    //   })
+    // });
+  },
+  computed: {
+    isNewLoginValidComputed() {
+      return this.isNewLoginValid;
+    }
+  },
   methods: {
+    signIn() {
+      this.$store
+        .dispatch("retrieveToken", {
+          username: this.username,
+          password: this.password
+        })
+        .then(response => {
+          this.$router.push({ name: "schedule" });
+        });
+    },
+    signUp() {
+      this.$store
+        .dispatch("registration", {
+          name: this.name,
+          username: this.newLogin,
+          password: this.newPassword,
+          birthday: this.birthday
+        })
+        .then(response => {
+          this.$router.push({ name: "schedule" });
+        });
+    },
+    checkUsername() {
+      clearTimeout(timeout);
+
+      if (!this.newLogin) {
+        return;
+      }
+
+      let currentThis = this;
+      timeout = setTimeout(function() {
+        currentThis.$store
+          .dispatch("checkUsername", {
+            username: currentThis.newLogin
+          })
+          .then(response => {
+            if (response.isUserRegistered) {
+              currentThis.isRegistrationFormValid = false;
+              currentThis.isNewLoginValid = false;
+
+              this.newLoginRules = [
+                v => !!v || "Введите логин",
+                v =>
+                  (v && v.length <= 30) ||
+                  "Логин не должен превышать 30 символов",
+                v =>
+                  this.isNewLoginValidComputed || "Такой логин уже используется"
+              ];
+            } else {
+              currentThis.isRegistrationFormValid = true;
+              currentThis.isNewLoginValid = true;
+
+              this.newLoginRules = [
+                v => !!v || "Введите логин",
+                v =>
+                  (v && v.length <= 30) ||
+                  "Логин не должен превышать 30 символов",
+                v =>
+                  this.isNewLoginValidComputed || "Такой логин уже используется"
+              ];
+            }
+          });
+      }, 600);
+    },
     resize() {
       this.vueCanvas.canvas.width = window.innerWidth;
       this.vueCanvas.canvas.height = window.innerHeight;
@@ -288,9 +375,6 @@ export default {
       if (e.keyCode === DELETE || e.keyCode === BACKSPACE) {
         this.clearCanvas();
       }
-    },
-    validate() {
-      console.log("login");
     },
     drawPath(e) {
       if (e.buttons !== 1 || this.isPenColorOpen || this.isPenThicknessOpen) {
@@ -331,6 +415,7 @@ export default {
 [v-cloak] {
   display: none;
 }
+
 $additional-gap: 20px;
 
 .background-wrapper {
@@ -389,11 +474,10 @@ $additional-gap: 20px;
       &.registration {
         max-width: 500px;
 
-        .date-of-birth {
+        .birthday {
           width: 100%;
           outline: 0;
           padding: 6px 10px;
-          color: rgba(0, 0, 0, 0.24);
           border: 1px solid rgba(0, 0, 0, 0.24);
           border-radius: 6px;
 
