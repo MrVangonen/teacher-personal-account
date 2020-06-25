@@ -1,9 +1,7 @@
 # Teacher Personal Account
 
 ## Hosting URL
-```
 https://teacher-lk.web.app
-```
 
 ## Project setup
 ```
