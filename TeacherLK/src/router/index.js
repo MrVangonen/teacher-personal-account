@@ -108,7 +108,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    
+    debugger
     if (!store.getters.loggedIn) {
       next({
         name: 'login'
