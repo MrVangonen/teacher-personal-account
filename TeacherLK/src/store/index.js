@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import axios from "axios";
 
 Vue.use(Vuex)
-axios.defaults.baseURL = 'https://secure-waters-78575.herokuapp.com/api';
+axios.defaults.baseURL = 'https://teacher-lk-backend.herokuapp.com/api';
 
 export const store = new Vuex.Store({
   state: {
