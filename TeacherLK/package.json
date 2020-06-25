@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "mu": "node-sass ./src/scss/utils/_mu.scss -o ./src/scss/utils/",
-    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi ",
+    "heroku-postbuild": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi ",
     "start": "node server-heroku.js"
   },
   "dependencies": {
