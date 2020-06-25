@@ -6,8 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "mu": "node-sass ./src/scss/utils/_mu.scss -o ./src/scss/utils/",
-    "heroku-postbuild": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi ",
-    "start": "node server-heroku.js"
+    "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
     "axios": "^0.19.2",

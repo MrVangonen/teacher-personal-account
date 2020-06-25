@@ -14,7 +14,6 @@ new Vue({
   axios,
   vuetify,
   store,
-
   render: function (h) {
     return h(App);
   }

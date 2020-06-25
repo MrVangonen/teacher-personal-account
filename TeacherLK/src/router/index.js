@@ -6,6 +6,7 @@ import VueRouter from "vue-router";
 import Schedule from "../views/Schedule.vue";
 import Start from "../views/Start.vue";
 const CurrentLesson = () => Promise.resolve(import("../views/CurrentLesson.vue"));
+const PageNotFound = () => Promise.resolve(import("../views/PageNotFound.vue"));
 const CurrentDiscipline = () => Promise.resolve(import("../views/CurrentDiscipline.vue"));
 const TimeTable = () => Promise.resolve(import("../views/TimeTable.vue"));
 const Students = () => Promise.resolve(import("../views/Students.vue"));
@@ -14,7 +15,14 @@ const Appeals = () => Promise.resolve(import("../views/Appeals.vue"));
 
 Vue.use(VueRouter);
 
-const routes = [{
+const routes = [
+  {
+    // сопоставляется со всем
+    path: '*',
+    name: "PageNotFound",
+    component: PageNotFound
+  },
+  {
     path: "/",
     redirect: "/login"
   },
@@ -108,7 +116,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    debugger
+    console.log(!store.getters.loggedIn)
     if (!store.getters.loggedIn) {
       next({
         name: 'login'
